@@ -2,103 +2,74 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const _userSchema = new Schema({
-    cardName: {
+    firstName: {
         type: String,
-        default: null
+        default: null,
+        maxLength: 20
     },
-    name: {
-        firstName: {
-            type: String,
-            default: null
-        },
-        middleName: {
-            type: String,
-            default: null
-        },    
-        lastName: {
-            type: String,
-            default: null
-        },
-        maidenName: {
-            type: String,
-            default: null
-        },
-        preferredName: {
-            type: String,
-            default: null
-        },
-        prefix: {
-            type: String,
-            default: null
-        },
-        suffix: {
-            type: String,
-            default: null
-        }
-    },    
-    accreditations: {
+    lastName: {
         type: String,
-        default: null
+        default: null,  
+        maxLength: 40
     },
     picture: {
         type: String,
-        default: null
+        default: null,
     },
-    logo: {
+    email: {
+        type: String,
+        default: null,
+        maxLength: 320
+    },
+    emailVerified: {
+        type: Boolean,
+        default: false
+    },
+    password: {
         type: String,
         default: null
     },
-    badges: {
-        type: Object,
-        default: []
-    },
-    company: {
-        title: {
-            type: String,
-            default: null
-        },
-        department: {
-            type: String,
-            default: null
-        },
-        company: {
-            type: String,
-            default: null
-        },
-        headline: {
-            type: String,
-            default: null
-        }
-    },
-    fields: {
-        type: Object,
-        default: []
-    },
-    design: {
+    provider: {
         type: String,
-        enum: ["classic", "modern", "sleek", "flat"],
-        default: "classic"
+        default: null
     },
-    theme: {
-        primaryColor: {
-            type: String,
-            default: "#3BB"
-        },
-        primaryAccent: {
-            type: String,
-            default: "#FFF"
-        },
-        secondaryColor: {
-            type: String,
-            default: "#1AB"
-        },
-        secondaryAccent: {
-            type: String,
-            default: "#FFF"
-        }
+    providerId: {
+        type: String,
+        default: null
     },
-
-})
+    registrationStatus: {
+        type: String,
+        default: 'unknown'
+    },
+    locale: {
+        type: String,
+        default: "en",
+    },
+    countryCode: {
+        type: String,
+        default: "IN"
+    },
+    dateFormat: {
+        type: String,
+        default: "dd/mm/yyyy"
+    },
+    defaultCurrency: {
+        type: String,
+        default: "INR"
+    },
+    notificationsRead: {
+        type: Date,
+        default: Date.now
+    },
+    notificationsCount: {
+        type: Number,
+        default: 0
+    },
+    lastLogin: { type: Date, default: Date.now },
+    created: { type: Date, default: Date.now },
+    updated: { type: Date, default: Date.now },
+    deleted: { type: Date, default: null }
+});
 
 const getUserModel = () => {
     return mongoose.model("Users", _userSchema, "Users");

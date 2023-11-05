@@ -32,23 +32,19 @@ const passportMiddleware = (req, res, next) => {
 
 app.get("/ping", (req,res)=>res.send("success"));
 
+app.post("/auth/signup", processHandler(service.signupWithEmail));
+app.post("/auth/login", processHandler(service.loginWithEmail));
+
 app.get("/auth/google", passportMiddleware, processHandler(service.googleAuth));
 app.get(
     "/auth/google/callback",  
     passport.authenticate('google', { failureRedirect: `${process.env.AUTH_DOMAIN}/auth/callback` }), 
-    processHandler(service.googleCallback));
-    
-app.get("/auth/github", passportMiddleware, processHandler(service.githubAuth));
+    processHandler(service.authCallback));
+app.get("/auth/facebook", passportMiddleware, processHandler(service.facebookAuth));
 app.get(
-    "/auth/github/callback",  
-    passport.authenticate('github', { failureRedirect: `${process.env.AUTH_DOMAIN}/auth/callback` }), 
-    processHandler(service.githubCallback));
-
-app.get("/auth/linkedin", passportMiddleware, processHandler(service.linkedinAuth));
-app.get(
-    "/auth/linkedin/callback",  
-    passport.authenticate('linkedin', { failureRedirect: `${process.env.AUTH_DOMAIN}/auth/callback` }), 
-    processHandler(service.googleCallback));
+    "/auth/facebook/callback",  
+    passport.authenticate('facebook', { failureRedirect: `${process.env.AUTH_DOMAIN}/auth/callback` }), 
+    processHandler(service.authCallback));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false

@@ -13,7 +13,6 @@ provider:
   runtime: nodejs18.x
   timeout: 30
 
-
 functions:
   auth:
     handler: ./handlers/auth.handler
@@ -21,6 +20,14 @@ functions:
       - http:
           path: /ping
           method: GET
+          cors: true
+      - http:
+          path: /auth/signup
+          method: POST
+          cors: true
+      - http:
+          path: /auth/login
+          method: POST
           cors: true
       - http:
           path: /auth/google
@@ -31,27 +38,11 @@ functions:
           method: GET
           cors: true
       - http:
-          path: /auth/github
+          path: /auth/facebook
           method: GET
           cors: true
       - http:
-          path: /auth/github/callback
-          method: GET
-          cors: true
-      - http:
-          path: /auth/linkedin
-          method: GET
-          cors: true
-      - http:
-          path: /auth/linkedin/callback
-          method: GET
-          cors: true
-      - http:
-          path: /authenticate
-          method: POST
-          cors: true
-      - http:
-          path: /checkUserExists
+          path: /auth/facebook/callback
           method: GET
           cors: true
   token:

@@ -1,7 +1,6 @@
 const passport = require('passport');
 const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
-const { Strategy: LinkedInStrategy } = require('passport-linkedin-oauth2');
-const { Strategy: GitHubStrategy } = require('passport-github2');
+const { Strategy: FacebookStrategy } = require('passport-facebook');
 
 module.exports = ()=>{
 
@@ -13,38 +12,25 @@ module.exports = ()=>{
               callbackURL: process.env.GOOGLE_CALLBACK_URL
             },
             async(accessToken, refreshToken, profile, done) => {
-              console.log(profile);
+                console.log(profile);
                 return done(null, profile);
             }
         )
     );
 
     passport.use(
-        new LinkedInStrategy(
+      new FacebookStrategy(
           {
-            clientID: process.env.LINKEDIN_CLIENT_ID,
-            clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-            callbackURL: process.env.LINKEDIN_CALLBACK_URL,
-            scope: ['email', 'profile']
+            clientID: process.env.FACEBOOK_CLIENT_ID,
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+            callbackURL: process.env.FACEBOOK_CALLBACK_URL
           },
-          (token, tokenSecret, profile, done) => {
-            return done(null, profile);
+          async(accessToken, refreshToken, profile, done) => {
+              console.log(profile);
+              return done(null, profile);
           }
-        )
-      );
-
-    passport.use(
-        new GitHubStrategy(
-          {
-            clientID: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
-            callbackURL: process.env.GITHUB_CALLBACK_URL
-          },
-          (accessToken, refreshToken, profile, done) => {
-            return done(null, profile);
-          }
-        )
-      );
+      )
+  );
 
     passport.serializeUser(function(user, done) {
         done(null, user);
