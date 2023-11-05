@@ -1,13 +1,13 @@
-name: Deploy to Firebase
+name: AWS Lambda Deployment
 
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   deploy:
-    name: Deploy to Firebase Hosting
+    name: Deploy to AWS Lambda
     runs-on: ubuntu-latest
 
     steps:
@@ -17,24 +17,15 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 18
-      
-      - name: Install Node.js dependencies
-        run: npm install --force
+          node-version: 14
 
-      - name: Build the React application
-        run: npm run build
+      - name: Install serverless framework
+        run: npm install -g serverless
 
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+      - name: Install serverless-offline plugin
+        run: npm install --save-dev serverless-offline
 
-      - name: Authenticate with Firebase
-        run: firebase use --token "$FIREBASE_TOKEN" --add "$FIREBASE_PROJECT_ID"
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          FIREBASE_PROJECT_ID: bizcard-web
-
-      - name: Deploy to Firebase Hosting
-        run: firebase deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - name: Deploy to AWS Lambda
+        run: |
+          serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          serverless deploy
