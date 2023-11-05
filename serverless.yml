@@ -52,3 +52,10 @@ functions:
           path: /accessToken
           method: POST
           cors: true
+  main:
+    handler: ./handlers/main.handler
+    events:
+      - http:
+          path: /main
+          method: GET
+          cors: true
