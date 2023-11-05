@@ -52,13 +52,13 @@ async function authCallback(req, res){
 
 async function signupWithEmail(req, res){
     try{
-        const [email, password] = req.data;
+        const {email, password} = req.body;
         const UserModel = depManager.USER.getUserModel();
 
         const user = await UserModel.findOne({email: email});
 
         if(user){
-            return responser.error(res, null, "AUTH_E001");
+            return responser.success(res, null, "AUTH_E002");
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -72,37 +72,38 @@ async function signupWithEmail(req, res){
         };
 
         const createdUser = await UserModel.create(data);
-        const [accessToken, refreshToken] = generateTokens(createdUser._id);
+        const {accessToken, refreshToken} = generateTokens(createdUser._id);
 
-        return responser.success(res, {createdUser, accessToken, refreshToken}, "AUTH_S001");
+        return responser.success(res, {createdUser, accessToken, refreshToken}, "AUTH_S002");
         
     }catch(error){
-        return responser.error(res, null, "AUTH_E001");
+        return responser.success(res, null, "AUTH_E001");
     }
 }
 
 
 async function loginWithEmail(req, res){
     try{
-        const [email, password] = req.data;
+        const {email, password} = req.body;
         const UserModel = depManager.USER.getUserModel();
 
         const user = await UserModel.findOne({email: email});
 
         if(!user){
-            return responser.error(res, null, "AUTH_E001");
+            return responser.success(res, null, "AUTH_E003");
         }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if(passwordMatch){
-            const [accessToken, refreshToken] = generateTokens(createdUser._id);
+            const {accessToken, refreshToken} = generateTokens(user._id);
             return responser.success(res, {user, accessToken, refreshToken}, "AUTH_S001");
         }else{
-            return responser.error(res, null, "AUTH_E001");
+            return responser.success(res, null, "AUTH_E004");
         }
 
     }catch(error){
+        console.log(error);
         return responser.error(res, null, "AUTH_E001");
     }
 }

@@ -9,7 +9,7 @@ const _DBException = (message) => {
 
 module.exports.openDBConnection = async () => {
   try {
-    const dbUrl = 'mongodb+srv://tobirama:tobirama@formly-dev.d7shzqk.mongodb.net/dev?retryWrites=true&w=majority';
+    const dbUrl = 'mongodb+srv://bizcard:bizcard@bizcard.3ohmwjr.mongodb.net/bizcard-dev?retryWrites=true&w=majority';
 
     if (!dbUrl) {
       throw new _DBException("DB connection string not valid");
