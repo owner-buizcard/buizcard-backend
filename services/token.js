@@ -28,8 +28,8 @@ function getAccessToken(req, res) {
         return responser.success(res, null, "AUTH_E001");
       } 
       const userId = decoded.sub;
-      const { accessToken, refreshToken: newRefreshToken } = generateTokens(userId);
-      return responser.success(res, {accessToken, newRefreshToken}, "AUTH_S001");
+      const token = generateTokens(userId);
+      return responser.success(res, token, "AUTH_S001");
     } catch (error) {
       return responser.error(res, error, "AUTH_E001");
     }

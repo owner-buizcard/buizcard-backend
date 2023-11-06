@@ -72,9 +72,9 @@ async function signupWithEmail(req, res){
         };
 
         const createdUser = await UserModel.create(data);
-        const {accessToken, refreshToken} = generateTokens(createdUser._id);
+        const token = generateTokens(createdUser._id);
 
-        return responser.success(res, {createdUser, accessToken, refreshToken}, "AUTH_S002");
+        return responser.success(res, {createdUser, token}, "AUTH_S002");
         
     }catch(error){
         return responser.success(res, null, "AUTH_E001");
@@ -96,8 +96,8 @@ async function loginWithEmail(req, res){
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if(passwordMatch){
-            const {accessToken, refreshToken} = generateTokens(user._id);
-            return responser.success(res, {user, accessToken, refreshToken}, "AUTH_S001");
+            const token = generateTokens(user._id);
+            return responser.success(res, {user, token}, "AUTH_S001");
         }else{
             return responser.success(res, null, "AUTH_E004");
         }
