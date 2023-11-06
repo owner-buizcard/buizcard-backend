@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const _cardSchema = new Schema({
     cardName: {
         type: String,
-        default: null
+        required: true
     },
     name: {
         firstName: {
@@ -19,38 +19,44 @@ const _cardSchema = new Schema({
             type: String,
             default: null
         },
-        maidenName: {
-            type: String,
-            default: null
-        },
-        preferredName: {
-            type: String,
-            default: null
-        },
         prefix: {
             type: String,
             default: null
+        }
+    },   
+    phoneNumber: {
+        type: String,
+        default: null
+    },
+    email: {
+        type: String,
+        default: null
+    },
+    address: {
+        addressLine1: {
+            type: String,
+            default: null
         },
-        suffix: {
+        addressLine2: {
+            type: String,
+            default: null
+        },
+        city: {
+            type: String,
+            default: null
+        },
+        state: {
+            type: String,
+            default: null
+        },
+        country: {
+            type: String,
+            default: null
+        },
+        pinCode: {
             type: String,
             default: null
         }
-    },    
-    accreditations: {
-        type: String,
-        default: null
-    },
-    picture: {
-        type: String,
-        default: null
-    },
-    logo: {
-        type: String,
-        default: null
-    },
-    badges: {
-        type: Object,
-        default: []
     },
     company: {
         title: {
@@ -61,23 +67,61 @@ const _cardSchema = new Schema({
             type: String,
             default: null
         },
-        company: {
+        companyName: {
             type: String,
             default: null
         },
-        headline: {
+        companyWebsite: {
+            type: String,
+            default: null
+        },
+        companyDescription: {
             type: String,
             default: null
         }
     },
-    fields: {
-        type: Object,
-        default: []
+    picture: {
+        type: String,
+        default: null
+    },
+    logo: {
+        type: String,
+        default: null
+    },
+    banner: {
+        type: String,
+        default: null
     },
     design: {
         type: String,
         enum: ["classic", "modern", "sleek", "flat"],
         default: "classic"
+    },
+    badges: {
+        type: Object,
+        default: []
+    },
+    status: {
+        type: String,
+        enum: ["ACTIVE", "INACTIVE", "DELETED"],
+        default: "ACTIVE"
+    },
+    fields: {
+        type: [{
+            id: {
+                type: String,
+                default: null
+            },
+            name: {
+                type: String,
+                default: null
+            },
+            value: {
+                type: String,
+                default: null
+            },
+        }],
+        default: []
     },
     theme: {
         primaryColor: {
@@ -97,7 +141,13 @@ const _cardSchema = new Schema({
             default: "#FFF"
         }
     },
-
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        required: true
+    },
+    created: { type: Date, default: Date.now },
+    updated: { type: Date, default: Date.now },
+    deleted: { type: Date, default: null }
 })
 
 const getCardModel = () => {

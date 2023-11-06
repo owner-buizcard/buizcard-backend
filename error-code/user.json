@@ -1,0 +1,8 @@
+{
+    "en": {
+        "S001": "Profile updated successfully!",
+
+        "E001": "Something went wrong. Try again later!.",
+        "E002": "Profile not found."
+    }
+}

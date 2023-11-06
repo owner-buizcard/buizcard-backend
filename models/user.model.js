@@ -12,9 +12,21 @@ const _userSchema = new Schema({
         default: null,  
         maxLength: 40
     },
+    designation: {
+        type: String,
+        default: null,
+    },
+    company: {
+        type: String,
+        default: null,
+    },
     picture: {
         type: String,
         default: null,
+    },
+    phoneNumber: {
+        type: String,
+        default: null
     },
     email: {
         type: String,

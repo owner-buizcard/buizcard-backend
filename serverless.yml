@@ -59,3 +59,53 @@ functions:
           path: /main
           method: GET
           cors: true
+  user:
+    handler: ./handlers/user.handler
+    events:
+      - http:
+          path: /me
+          method: PUT
+          cors: true
+  card:
+    handler: ./handlers/card.handler
+    events:
+      - http:
+          path: /card
+          method: POST
+          cors: true
+      - http:
+          path: /card
+          method: PUT
+          cors: true
+      - http:
+          path: /card
+          method: GET
+          cors: true
+      - http:
+          path: /user-cards
+          method: GET
+          cors: true
+      - http:
+          path: /card
+          method: DELETE
+          cors: true
+  contact:
+    handler: ./handlers/card.handler
+    events:
+      - http:
+          path: /contact
+          method: POST
+          cors: true
+      - http:
+          path: /contact
+          method: GET
+          cors: true
+      - http:
+          path: /user-contacts
+          method: GET
+          cors: true
+      - http:
+          path: /contact
+          method: DELETE
+          cors: true
+
