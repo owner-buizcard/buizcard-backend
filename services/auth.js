@@ -52,7 +52,7 @@ async function authCallback(req, res){
 
 async function signupWithEmail(req, res){
     try{
-        const {email, password} = req.body;
+        const {email, password, firstName, lastName} = req.body;
         const UserModel = depManager.USER.getUserModel();
 
         const user = await UserModel.findOne({email: email});
@@ -64,6 +64,8 @@ async function signupWithEmail(req, res){
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const data = {
+            firstName: firstName,
+            lastName: lastName,
             email: email,
             password: hashedPassword,
             provider: "EMAIL",
