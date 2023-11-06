@@ -3,7 +3,7 @@ function cors_origin() {
         try {
             res.setHeader("X-XSS-Protection", "1; mode=block");
 
-            const _whitelist = "http://localhost:3000,http://localhost:4000,http://localhost:5000";
+            const _whitelist = "http://localhost:3000,http://localhost:4000,http://localhost:5000,https://bizcard-web.web.app";
             const allowedOrigins = _whitelist.split(',');
             const origin = req.headers.origin ?? req.headers.host;
 
