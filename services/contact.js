@@ -34,7 +34,25 @@ async function get(req, res){
 async function getUserContacts(req, res){
     try{
         const userId = req.userId;
-        const contacts = await depManager.CONTACT.getContactModel().find({userId: userId});
+
+        const condition = [
+            {
+                $match: { userId: new mongoose.Types.ObjectId(userId) }
+            },
+            {
+                $lookup: {
+                    from: 'Users',
+                    localField: 'contactId',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: '$user'
+            }
+        ];
+
+        const contacts = await depManager.CONTACT.getContactModel().aggregate(condition);
         
         return responser.success(res, contacts, "CONTACT_S001");
     }catch(error){
