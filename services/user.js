@@ -38,7 +38,7 @@ async function update(req, res){
         if(phoneNumber){
             user.phoneNumber = phoneNumber;
         }        
-        user.updated = new Date.now();
+        user.updated = Date.now();
         await user.save();
 
         return responser.success(res, user, "USER_S001");

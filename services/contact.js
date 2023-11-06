@@ -9,7 +9,7 @@ async function create(req, res){
         const data = {
             userId: userId,
             contactId: contactId,
-            connectedAt: new Date.now()
+            connectedAt: Date.now()
         }
 
         const contact = await depManager.CONTACT.getContactModel().create(data);

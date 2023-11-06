@@ -6,12 +6,13 @@ async function create(req, res){
         const userId = req.userId;
         let data = req.body;
         
-        data.created = new Date.now();
+        data.created = Date.now();
         data.createdBy = userId;
 
         const card = await depManager.CARD.getCardModel().create(data);
         return responser.success(res, card, "CARD_S001");
     }catch(error){
+        console.log(error);
         return responser.success(res, null, "CARD_E001");
     }
 }
@@ -21,7 +22,7 @@ async function update(req, res){
         const { cardId } = req.query;
         const data = req.body;
 
-        data.updated = new Date.now();
+        data.updated = Date.now();
 
         const card = await depManager.CARD.getCardModel().updateOne({_id: cardId}, data);
 
