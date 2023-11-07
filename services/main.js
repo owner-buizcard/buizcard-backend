@@ -33,8 +33,9 @@ async function fetchMainData(req, res) {
         ]);
         
         const token = generateTokens(userId)
+        const config = {fieldTypes};
         
-        return responser.success(res, {user, contacts, cards, token}, "MAIN_S001")
+        return responser.success(res, {user, contacts, cards, config,  token}, "MAIN_S001")
     }catch(error){
         console.log(error);
         return responser.success(res, null, "MAIN_E001")
