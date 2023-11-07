@@ -25,10 +25,11 @@ async function fetchMainData(req, res) {
             }
         ];
 
-        const [user, cards, contacts] = await Promise.all([
+        const [user, cards, contacts, fieldTypes] = await Promise.all([
             depManager.USER.getUserModel().findById(userId),
             depManager.CARD.getCardModel().find({createdBy: userId, status: { $ne: "DELETED" }}),
-            depManager.CONTACT.getContactModel().aggregate(condition)
+            depManager.CONTACT.getContactModel().aggregate(condition),
+            depManager.CONFIG.getFieldTypesModel().find()
         ]);
         
         const token = generateTokens(userId)

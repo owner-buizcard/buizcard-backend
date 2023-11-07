@@ -119,7 +119,7 @@ const _cardSchema = new Schema({
             value: {
                 type: String,
                 default: null
-            },
+            }
         }],
         default: []
     },
