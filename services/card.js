@@ -5,6 +5,20 @@ async function create(req, res){
     try{
         const userId = req.userId;
         let data = req.body;
+
+        const {picture, logo, banner} = req.files;
+
+        if(picture!=null){
+            data.picture = await uploadFile(`picture/${userId}/`, picture)
+        }
+
+        if(logo!=null){
+            data.logo = await uploadFile(`logo/${userId}/`, logo)
+        }
+
+        if(banner!=null){
+            data.banner = await uploadFile(`banner/${userId}/`, banner)
+        }
         
         data.created = Date.now();
         data.createdBy = userId;
