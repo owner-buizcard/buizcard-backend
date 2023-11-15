@@ -52,26 +52,31 @@ module.exports.getDDMMYYYY = (currentDate = new Date(), seperator = '-') => {
 }
 
 module.exports.uploadFile=async(folderName, file)=>{
-  let _uploadFolder = folderName;
-  var extension = file.name.substr(file.name.lastIndexOf(".") + 1, file.name.length - 1);
+  const _uploadFolder = folderName;
+  const extension = file.name.substr(file.name.lastIndexOf('.') + 1);
   console.log(extension);
   const newName = `${_uploadFolder}${this.makeid(30)}.${extension}`;
-  const _fileUrl = await this.uploadObjectToS3Bucket(newName, file.mimetype, file.data);
-  const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
-  return file_url;
+  const fileUrl = await this.uploadObjectToS3Bucket(newName, file.mimetype, file.data);
+  return fileUrl.substring(0, fileUrl.indexOf('?'));
 }
 
 module.exports.uploadObjectToS3Bucket = async (objectName, mimeType, objectData) => {
   const aws = require('aws-sdk');
+  aws.config.update({
+    secretAccessKey: "AKIARFRP5ILSHWNXU7EC",
+    accessKeyId: "2cphEJYfbGP1Qrpb1A/GSnvFn2aCs+r3pfA9YupR",
+    region: 'ap-south-1'
+  })
+  const BUCKET = "bizcard-dev";
   const params = {
-    Bucket: 'wb-v1-bucket',
+    Bucket: BUCKET,
     Key: objectName,
     Body: objectData,
     ContentType: mimeType,
   };
   const s3 = new aws.S3({});
   const _result = await s3.putObject(params).promise();
-  const _params = { Bucket: BUCKET_NAME, Key: objectName };
+  const _params = { Bucket: BUCKET, Key: objectName };
   const url = s3.getSignedUrl('getObject', _params);
   return url;
 };

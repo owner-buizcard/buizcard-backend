@@ -14,14 +14,14 @@ async function fetchMainData(req, res) {
             },
             {
                 $lookup: {
-                    from: 'Users',
-                    localField: 'contactId',
+                    from: 'Cards',
+                    localField: 'cardId',
                     foreignField: '_id',
-                    as: 'user'
+                    as: 'card'
                 }
             },
             {
-                $unwind: '$user'
+                $unwind: '$card'
             }
         ];
 

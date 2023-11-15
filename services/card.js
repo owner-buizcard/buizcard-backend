@@ -1,29 +1,24 @@
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
+const { uploadFile} = require('../core/file_uploader');
 
 async function create(req, res){
     try{
         const userId = req.userId;
         let data = req.body;
 
-        const {picture, logo, banner} = req.files;
-
-        if(picture!=null){
-            data.picture = await uploadFile(`picture/${userId}/`, picture)
-        }
-
-        if(logo!=null){
-            data.logo = await uploadFile(`logo/${userId}/`, logo)
-        }
-
-        if(banner!=null){
-            data.banner = await uploadFile(`banner/${userId}/`, banner)
+        const picture = req.files?.picture;
+        if(picture){
+            data.picture = await uploadFile (`profile/${userId}/`, picture)
         }
         
         data.created = Date.now();
         data.createdBy = userId;
 
         const card = await depManager.CARD.getCardModel().create(data);
+
+        await depManager.ANALYTICS.getAnalyticsModel().create({cardId: card._id});
+
         return responser.success(res, card, "CARD_S001");
     }catch(error){
         console.log(error);
@@ -72,7 +67,10 @@ async function deleteCard(req, res){
     try{
         const { cardId } = req.query;
 
-        await depManager.CARD.getCardModel().updateOne({_id: cardId}, {status: "DELETED"});
+        await Promise.all([
+            depManager.CARD.getCardModel().updateOne({_id: cardId}, {status: "DELETED"}),
+            depManager.ANALYTICS.getAnalyticsModel().deleteOne({cardId: cardId})
+        ])
 
         return responser.success(res, true, "CARD_E005");
     }catch(error){

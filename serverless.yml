@@ -108,4 +108,15 @@ functions:
           path: /contact
           method: DELETE
           cors: true
+  analytics:
+    handler: ./handlers/analytics.handler
+    events:
+      - http:
+          path: /analytics
+          method: PUT
+          cors: true
+      - http:
+          path: /analytics
+          method: GET
+          cors: true
 

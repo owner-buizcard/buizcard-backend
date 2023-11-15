@@ -6,9 +6,13 @@ const _contactSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     },
-    contactId: {
+    cardId: {
         type: Schema.Types.ObjectId,
         required: true
+    },
+    status: {
+        type: String,
+        default: "active"
     },
     connectedAt: { 
         type: Date, 
