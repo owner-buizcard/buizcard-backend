@@ -18,8 +18,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors_origin());
 
-app.use(validateAccessToken);
+app.get("/config", processHandler(service.fetchConfigData));
 
+app.use(validateAccessToken);
 
 app.get("/main", processHandler(service.fetchMainData));
 

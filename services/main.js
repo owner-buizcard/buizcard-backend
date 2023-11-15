@@ -4,6 +4,22 @@ const depManager = require("../core/depManager");
 const responser = require("../core/responser");
 const { generateTokens } = require("./token");
 
+async function fetchConfigData(req, res) {
+    try{
+
+        const [fieldTypes] = await Promise.all([
+            depManager.CONFIG.getFieldTypesModel().find()
+        ]);
+
+        const config = {fieldTypes};
+        
+        return responser.success(res, {config}, "MAIN_S001")
+    }catch(error){
+        console.log(error);
+        return responser.success(res, null, "MAIN_E001")
+    }
+}
+
 async function fetchMainData(req, res) {
     try{
         const userId = req.userId;
@@ -43,5 +59,6 @@ async function fetchMainData(req, res) {
 }
 
 module.exports = {
+    fetchConfigData,
     fetchMainData
 }

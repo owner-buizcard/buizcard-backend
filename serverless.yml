@@ -56,6 +56,10 @@ functions:
     handler: ./handlers/main.handler
     events:
       - http:
+          path: /config
+          method: GET
+          cors: true
+      - http:
           path: /main
           method: GET
           cors: true
@@ -78,6 +82,10 @@ functions:
           method: PUT
           cors: true
       - http:
+          path: /card-preview
+          method: GET
+          cors: true
+      - http:
           path: /card
           method: GET
           cors: true
@@ -90,7 +98,7 @@ functions:
           method: DELETE
           cors: true
   contact:
-    handler: ./handlers/card.handler
+    handler: ./handlers/contact.handler
     events:
       - http:
           path: /contact

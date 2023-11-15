@@ -34,6 +34,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors_origin());
 
+app.get("/card-preview", processHandler(service.get));
+
 app.use(validateAccessToken);
 
 app.post("/card", processHandler(service.create));
