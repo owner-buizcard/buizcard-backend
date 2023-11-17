@@ -63,8 +63,8 @@ module.exports.uploadFile=async(folderName, file)=>{
 module.exports.uploadObjectToS3Bucket = async (objectName, mimeType, objectData) => {
   const aws = require('aws-sdk');
   aws.config.update({
-    secretAccessKey: "AKIARFRP5ILSCV67INVB",
-    accessKeyId: "qee7SFLtns2OXwCouaOORVWKxPdP/6fsoZQDQL+g",
+    secretAccessKey: "AKIARFRP5ILSNITID67N",
+    accessKeyId: "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",
     region: 'ap-south-1'
   })
   const BUCKET = "bizcard-dev";

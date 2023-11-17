@@ -24,6 +24,48 @@ async function fetchMainData(req, res) {
     try{
         const userId = req.userId;
 
+        const conditionForCards = [
+            {
+                $match: {
+                  createdBy: new mongoose.Types.ObjectId(userId),
+                  status: { $ne: "DELETED" }
+                }
+            },
+            {
+              $lookup: {
+                from: "Analytics",
+                localField: "_id",
+                foreignField: "cardId",
+                as: "analytics"
+              }
+            },
+            {
+              $unwind: {
+                path: "$analytics",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $group: {
+                _id: "$_id",
+                cardData: { $first: "$$ROOT" },
+                analytics: { $push: "$analytics" }
+              }
+            },
+            {
+                $project: {
+                    cardData: {
+                    $mergeObjects: ["$cardData", { analytics: "$analytics" }]
+                    }
+                }
+            },
+            {
+              $replaceRoot: {
+                newRoot: "$cardData"
+              }
+            }
+        ];   
+
         const condition = [
             {
                 $match: { userId: new mongoose.Types.ObjectId(userId) }
@@ -43,7 +85,7 @@ async function fetchMainData(req, res) {
 
         const [user, cards, contacts, fieldTypes] = await Promise.all([
             depManager.USER.getUserModel().findById(userId),
-            depManager.CARD.getCardModel().find({createdBy: userId, status: { $ne: "DELETED" }}),
+            depManager.CARD.getCardModel().aggregate(conditionForCards),
             depManager.CONTACT.getContactModel().aggregate(condition),
             depManager.CONFIG.getFieldTypesModel().find()
         ]);
