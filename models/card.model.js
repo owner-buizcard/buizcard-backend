@@ -103,7 +103,7 @@ const _cardSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["ACTIVE", "INACTIVE", "DELETED"],
+        enum: ["ACTIVE", "INACTIVE", "PAUSED","DELETED"],
         default: "ACTIVE"
     },
     fields: {
@@ -140,6 +140,14 @@ const _cardSchema = new Schema({
             type: String,
             default: "#FFF"
         }
+    },
+    qrVisible: {
+        type: Boolean,
+        default: false
+    },
+    qrWithLogo: {
+        type: Boolean,
+        default: false
     },
     createdBy: {
         type: Schema.Types.ObjectId,
