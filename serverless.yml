@@ -127,4 +127,12 @@ functions:
           path: /analytics
           method: GET
           cors: true
+  share:
+    handler: ./handlers/share.handler
+    events:
+      - http:
+          path: /app/p
+          method: GET
+          cors: true
+
 

@@ -22,7 +22,7 @@ app.put("/analytics", processHandler(service.update));
 const { validateAccessToken } = require('../middlewares/authenticate');
 app.use(validateAccessToken);
 
-app.put("/analytics", processHandler(service.get));
+app.get("/analytics", processHandler(service.get));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false
