@@ -13,7 +13,7 @@ app.use(open_origin());
 
 app.get('/app/p', (req, res)=>{
 
-    const imageUrl = "https://firebasestorage.googleapis.com/v0/b/bizcard-web.appspot.com/o/cardbuilder%2Ficons%2Fdesign%2Fbehance.png?alt=media&token=28a892dc-7baa-4a30-922b-8e677cf383ee";
+    const imageUrl = "https://bc-dev-v1.s3.ap-south-1.amazonaws.com/previewImage.jpg";
     const redirectUrl = "https://bizcard-web.web.app/app/cards";
 
     const metadataHtml = `

@@ -1,15 +1,28 @@
 const depManager = require("../core/depManager");
+const { uploadFile } = require("../core/file_uploader");
 const responser = require("../core/responser");
-const { uploadFile} = require('../core/file_uploader');
+const { generatePreviewImage } = require("../core/utils");
 
 async function create(req, res){
     try{
+        
+        // const fileUrl = await generatePreviewImage("1");
+
         const userId = req.userId;
         let data = req.body;
 
         const picture = req.files?.picture;
+        const logo = req.files?.logo;
+        const banner = req.files?.banner;
+
         if(picture){
-            data.picture = await uploadFile (`profile/${userId}/`, picture)
+            data.picture = await uploadFile(`card/${userId}`, picture)
+        }
+        if(logo){
+            data.logo = await uploadFile(`card/${userId}`, logo)
+        }
+        if(banner){
+            data.banner = await uploadFile(`card/${userId}`, banner)
         }
         
         data.created = Date.now();

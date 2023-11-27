@@ -23,7 +23,11 @@ const _cardSchema = new Schema({
             type: String,
             default: null
         }
-    },   
+    },  
+    bio: {
+        type: String,
+        default: null
+    }, 
     phoneNumber: {
         type: String,
         default: null
@@ -97,6 +101,10 @@ const _cardSchema = new Schema({
         enum: ["classic", "modern", "sleek", "flat"],
         default: "classic"
     },
+    theme: {
+        type: String,
+        default: '#ffffff'
+    },
     badges: {
         type: Object,
         default: []
@@ -119,26 +127,38 @@ const _cardSchema = new Schema({
             value: {
                 type: String,
                 default: null
+            },
+            highlight: {
+                type: Boolean,
+                default: false
+            },
+            desc: {
+                type: String,
+                default: null
             }
         }],
         default: []
     },
-    theme: {
-        primaryColor: {
+    qr: {
+        logo: {
             type: String,
-            default: "#3BB"
+            default: null
         },
-        primaryAccent: {
+        codeStyle: {
             type: String,
-            default: "#FFF"
+            default: "dots"
         },
-        secondaryColor: {
+        eyeStyle: {
             type: String,
-            default: "#1AB"
+            default: "leaf"
         },
-        secondaryAccent: {
+        fgColor: {
             type: String,
-            default: "#FFF"
+            default: "#000000"
+        },
+        eyeColor: {
+            type: String,
+            default: "#008080"
         }
     },
     qrVisible: {

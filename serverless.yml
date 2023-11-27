@@ -12,6 +12,20 @@ provider:
   name: aws
   runtime: nodejs18.x
   timeout: 30
+  environment:
+    AWS_ACCESS_KEY_ID: AKIATPFKBFSE2DOYEP22
+    AWS_SECRET_ACCESS_KEY: 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
+    AWS_REGION: bc-dev-v1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - "bc-dev-v1"
+            - "/*"
 
 functions:
   auth:

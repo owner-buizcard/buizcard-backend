@@ -1,36 +1,35 @@
-const AWS = require('aws-sdk');
+// const AWS = require('aws-sdk');
+// const path = require('path');
+// const fs = require('fs');
 
-
-const accessKeyId = 'AKIARFRP5ILSHWNXU7EC';
-const secretAccessKey = '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';
-const region = 'ap-south-1';
-const BUCKET = 'bizcard-dev';
-
+// const accessKeyId = 'AKIATPFKBFSE2DOYEP22';
+// const secretAccessKey = '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';
+// const region = 'ap-south-1';
+const BUCKET = 'bc-dev-v1';
 
 module.exports.uploadFile=async(folderName, file)=>{
-
-    const _uploadFolder = folderName;
-    const extension = file.name.substr(file.name.lastIndexOf('.') + 1);
+    let _uploadFolder = folderName;
+    var extension = file.name.substr(file.name.lastIndexOf(".") + 1, file.name.length - 1);
     console.log(extension);
     const newName = `${_uploadFolder}${this.makeid(30)}.${extension}`;
-    const fileUrl = await this.uploadObjectToS3Bucket(newName, file.mimetype, file.data);
-    return fileUrl.substring(0, fileUrl.indexOf('?'));
+    const _fileUrl = await this.uploadObjectToS3Bucket(newName, file.mimetype, file.data);
+    const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
+    return file_url;
 }
 
 module.exports.uploadObjectToS3Bucket=async(objectName, mimeType, objectData)=>{
-    const s3 = new AWS.S3({
-        secretAccessKey: secretAccessKey,
-        accessKeyId: accessKeyId,
-        region: region
-      })
+    console.log()
+    const aws = require('aws-sdk');
+    const BUCKET_NAME = BUCKET;
     const params = {
-        Bucket: BUCKET,
+        Bucket: BUCKET_NAME,
         Key: objectName,
         Body: objectData,
         ContentType: mimeType,
     };
+    const s3 = new aws.S3({});
     const _result = await s3.putObject(params).promise();
-    const _params = { Bucket: BUCKET, Key: objectName };
+    const _params = { Bucket: BUCKET_NAME, Key: objectName };
     const url = s3.getSignedUrl('getObject', _params);
     return url;
 }

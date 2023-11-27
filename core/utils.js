@@ -51,32 +51,108 @@ module.exports.getDDMMYYYY = (currentDate = new Date(), seperator = '-') => {
 
 }
 
+const accessKeyId = 'AKIATPFKBFSE5AYZRBKA';
+const secretAccessKey = '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';
+const region = 'ap-south-1';
+const BUCKET = 'bc-dev-v1';
+
 module.exports.uploadFile=async(folderName, file)=>{
-  const _uploadFolder = folderName;
-  const extension = file.name.substr(file.name.lastIndexOf('.') + 1);
+  let _uploadFolder = folderName;
+  var extension = file.name.substr(file.name.lastIndexOf(".") + 1, file.name.length - 1);
   console.log(extension);
   const newName = `${_uploadFolder}${this.makeid(30)}.${extension}`;
-  const fileUrl = await this.uploadObjectToS3Bucket(newName, file.mimetype, file.data);
-  return fileUrl.substring(0, fileUrl.indexOf('?'));
+  const _fileUrl = await this.uploadObjectToS3Bucket(newName, file.mimetype, file.data);
+  const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
+  return file_url;
 }
 
 module.exports.uploadObjectToS3Bucket = async (objectName, mimeType, objectData) => {
+  console.log()
   const aws = require('aws-sdk');
-  aws.config.update({
-    secretAccessKey: "AKIARFRP5ILSNITID67N",
-    accessKeyId: "rihgMsLlrhWGqiyGrbRgSbyZAtlF0y1luvwWcCKj",
-    region: 'ap-south-1'
-  })
-  const BUCKET = "bizcard-dev";
+
   const params = {
     Bucket: BUCKET,
     Key: objectName,
     Body: objectData,
     ContentType: mimeType,
   };
-  const s3 = new aws.S3({});
+
+  const s3 = new aws.S3({
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey,
+    region: region
+  })
+
   const _result = await s3.putObject(params).promise();
   const _params = { Bucket: BUCKET, Key: objectName };
   const url = s3.getSignedUrl('getObject', _params);
   return url;
 };
+
+
+module.exports.generatePreviewImage = async(jobId)=>{
+
+  const qr = require('qrcode');
+  const Jimp = require('jimp');
+  
+  const backgroundImagePath =
+    'https://firebasestorage.googleapis.com/v0/b/bizcard-web.appspot.com/o/preview%2Fbackground.png?alt=media&token=214f70c1-4f00-46bb-a4a9-9bf93b3a8666';
+
+  const profileUrl =
+    'https://firebasestorage.googleapis.com/v0/b/bizcard-web.appspot.com/o/WhatsApp%20Image%202023-11-23%20at%2010.30.25%20PM.jpeg?alt=media&token=c853d384-161f-49cc-bf91-a590f81d0cc8';
+
+  const qrData = `test`;
+  let qrDataURL = await qr.toDataURL(qrData, { margin: 1 });
+
+  // Make images readable
+  let [image, qrImage, profileImage] = await Promise.all([
+    Jimp.read(backgroundImagePath),
+    Jimp.read(Buffer.from(qrDataURL.split(',')[1], 'base64')),
+    Jimp.read(profileUrl),
+  ]);
+
+  // Combine image with QR code
+  image.resize(image.bitmap.width * 0.5, image.bitmap.height * 0.5);
+  qrImage.resize(image.bitmap.height * 0.4, image.bitmap.height * 0.4);
+
+  profileImage.resize(image.bitmap.height * 0.4, image.bitmap.height * 0.4);
+
+  const xPosition = image.bitmap.width - qrImage.bitmap.width - 45;
+  const yPosition = (image.bitmap.height - qrImage.bitmap.height) / 1.2;
+
+  image.composite(qrImage, xPosition, yPosition);
+
+  image.composite(profileImage, 20, 20);
+
+  // Your HTML content goes here
+  // const htmlContent = `<div style="margin: 16px; color: black; font-size: 24px; background: transparent; position: relative; height: 320px; width: 560px">
+  //   <p style="position: absolute; top: 0px; right: 10px; color: white; font-size: 16px">
+  //     <b>Instrive Softlabs Pvt ltd</b>
+  //   </p>
+  //   <p style="position: absolute; bottom: 60px; ">
+  //     <b>Dhana Sekaran R</b>
+  //   </p>
+  //   <p style="position: absolute; color: dimgrey; font-size: 16px; bottom: 40px;">
+  //     Flutter Developer
+  //   </p>
+  // </div>`;
+
+  // Use html2canvas to capture the screenshot
+  // const canvas = await html2canvas(document.createRange().createContextualFragment(htmlContent));
+  // const screenshotBuffer = await canvas.toDataURL('image/jpeg');
+  // const screenshotImage = await Jimp.read(Buffer.from(screenshotBuffer.split(',')[1], 'base64'));
+
+  // const maxWidth = image.bitmap.width - 20;
+
+  // image.composite(screenshotImage, 0, 0, {
+  //   mode: Jimp.BLEND_SOURCE_OVER,
+  //   opacitySource: 1,
+  //   opacityDest: 1,
+  // });
+
+  let buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
+
+  const _fileUrl = await this.uploadObjectToS3Bucket(`previewImage.jpg`, 'image/jpeg', buffer);
+  const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
+  return file_url;
+}
