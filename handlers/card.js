@@ -12,8 +12,11 @@ const service = require('../services/card');
 const cors_origin = require("../core/cors_origin");
 const { validateAccessToken } = require('../middlewares/authenticate');
 
-const fileUpload = require('express-fileupload');
 
+// const { initializeFirebase } = require('../core/firebase-config');
+
+const fileUpload = require('express-fileupload');
+// 
 const app = express();
 
 app.use(fileUpload({
@@ -29,6 +32,8 @@ app.use(fileUpload({
     },
     debug: true,
 }));
+
+// app.use(initializeFirebase);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

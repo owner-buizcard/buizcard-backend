@@ -5,7 +5,20 @@
 // const accessKeyId = 'AKIATPFKBFSE2DOYEP22';
 // const secretAccessKey = '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';
 // const region = 'ap-south-1';
+
 const BUCKET = 'bc-dev-v1';
+
+// module.exports.uploadFileToFirestore=async(firebaseApp, folderName, file)=>{
+//     const { getStorage, ref, uploadBytes, getDownloadURL } = require('firebase/storage');
+    
+//     const storage = getStorage(firebaseApp);
+//     const storageRef = ref(storage, 'your-storage-path/' + file.name);
+//     await uploadBytes(storageRef, file.data, {
+//         contentType: 'image/jpeg',
+//       });
+//     const downloadURL = await getDownloadURL(storageRef);
+//     return downloadURL;
+// }
 
 module.exports.uploadFile=async(folderName, file)=>{
     let _uploadFolder = folderName;

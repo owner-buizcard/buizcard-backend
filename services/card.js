@@ -1,21 +1,28 @@
 const depManager = require("../core/depManager");
-const { uploadFile } = require("../core/file_uploader");
 const responser = require("../core/responser");
-const { generatePreviewImage } = require("../core/utils");
+const path = require('path');
+const { generatePreviewImage, uploadFile } = require("../core/utils");
 
 async function create(req, res){
     try{
         
         // const fileUrl = await generatePreviewImage("1");
 
+        console.log(req.file);
+
         const userId = req.userId;
         let data = req.body;
+
+        console.log(req.files);
 
         const picture = req.files?.picture;
         const logo = req.files?.logo;
         const banner = req.files?.banner;
 
         if(picture){
+            // const uploadPath = path.join(__dirname, 'uploads/', picture.name);
+            // await picture.mv(uploadPath);
+
             data.picture = await uploadFile(`card/${userId}`, picture)
         }
         if(logo){
@@ -28,11 +35,11 @@ async function create(req, res){
         data.created = Date.now();
         data.createdBy = userId;
 
-        const card = await depManager.CARD.getCardModel().create(data);
+        // const card = await depManager.CARD.getCardModel().create(data);
 
-        await depManager.ANALYTICS.getAnalyticsModel().create({cardId: card._id});
+        // await depManager.ANALYTICS.getAnalyticsModel().create({cardId: card._id});
 
-        return responser.success(res, card, "CARD_S001");
+        return responser.success(res, data.picture, "CARD_S001");
     }catch(error){
         console.log(error);
         return responser.success(res, null, "CARD_E001");

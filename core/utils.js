@@ -67,28 +67,23 @@ module.exports.uploadFile=async(folderName, file)=>{
 }
 
 module.exports.uploadObjectToS3Bucket = async (objectName, mimeType, objectData) => {
-  console.log()
   const aws = require('aws-sdk');
-
+  const BUCKET_NAME = 'bc-dev-v1';
   const params = {
-    Bucket: BUCKET,
-    Key: objectName,
+    Bucket: BUCKET_NAME,
+    Key: 'test.jpeg',
     Body: objectData,
+    ContentEncoding: 'base64',
     ContentType: mimeType,
   };
-
-  const s3 = new aws.S3({
-    accessKeyId: accessKeyId,
-    secretAccessKey: secretAccessKey,
-    region: region
-  })
-
+  console.log(params)
+  const s3 = new aws.S3({});
   const _result = await s3.putObject(params).promise();
-  const _params = { Bucket: BUCKET, Key: objectName };
+  console.log(_result)
+  const _params = { Bucket: BUCKET_NAME, Key: 'test.jpeg' };
   const url = s3.getSignedUrl('getObject', _params);
   return url;
 };
-
 
 module.exports.generatePreviewImage = async(jobId)=>{
 
