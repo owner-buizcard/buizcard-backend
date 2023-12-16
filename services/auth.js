@@ -13,7 +13,7 @@ async function googleAuth(req, res, next){
     passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
 }
 
-async function linkedinAuth(){
+async function linkedinAuth(req, res){
     try{
         const { code } = req.query;
 
