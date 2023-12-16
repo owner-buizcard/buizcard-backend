@@ -47,7 +47,7 @@ async function authCallback(req, res){
         accessToken = generateTokens(createdUser._id).accessToken;
     }
 
-    res.redirect(`${process.env.AUTH_DOMAIN}/auth/callback?token=${accessToken}`);
+    res.redirect(`http://localhost:3000/auth/callback?token=${accessToken}`);
 }
 
 async function signupWithEmail(req, res){

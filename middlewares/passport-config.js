@@ -9,7 +9,7 @@ module.exports = ()=>{
             {
               clientID: process.env.GOOGLE_CLIENT_ID,
               clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-              callbackURL: process.env.GOOGLE_CALLBACK_URL
+              callbackURL: "https://x9a0br47t1.execute-api.us-east-1.amazonaws.com/dev/auth/google/callback"
             },
             async(accessToken, refreshToken, profile, done) => {
                 console.log(profile);

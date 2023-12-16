@@ -24,10 +24,26 @@ const _fieldTypesSchema = new Schema({
     },
 })
 
+const _backgroundSchema = new Schema({
+    category: {
+        type: String,
+        required: true
+    },
+    link: {
+        type: String,
+        required: true
+    }
+})
+
 const getFieldTypesModel = () => {
     return mongoose.model("FieldTypes", _fieldTypesSchema, "FieldTypes");
 };
 
+const getBackgroundModel = () => {
+    return mongoose.model("Backgrounds", _backgroundSchema, "Backgrounds");
+};
+
 module.exports = {
-    getFieldTypesModel
+    getFieldTypesModel,
+    getBackgroundModel
 };

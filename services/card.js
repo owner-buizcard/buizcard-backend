@@ -8,38 +8,38 @@ async function create(req, res){
         
         // const fileUrl = await generatePreviewImage("1");
 
-        console.log(req.file);
+        // console.log(req.file);
 
         const userId = req.userId;
         let data = req.body;
 
-        console.log(req.files);
+        // console.log(req.files);
 
-        const picture = req.files?.picture;
-        const logo = req.files?.logo;
-        const banner = req.files?.banner;
+        // const picture = req.files?.picture;
+        // const logo = req.files?.logo;
+        // const banner = req.files?.banner;
 
-        if(picture){
-            // const uploadPath = path.join(__dirname, 'uploads/', picture.name);
-            // await picture.mv(uploadPath);
+        // if(picture){
+        //     // const uploadPath = path.join(__dirname, 'uploads/', picture.name);
+        //     // await picture.mv(uploadPath);
 
-            data.picture = await uploadFile(`card/${userId}`, picture)
-        }
-        if(logo){
-            data.logo = await uploadFile(`card/${userId}`, logo)
-        }
-        if(banner){
-            data.banner = await uploadFile(`card/${userId}`, banner)
-        }
+        //     data.picture = await uploadFile(`card/${userId}`, picture)
+        // }
+        // if(logo){
+        //     data.logo = await uploadFile(`card/${userId}`, logo)
+        // }
+        // if(banner){
+        //     data.banner = await uploadFile(`card/${userId}`, banner)
+        // }
         
         data.created = Date.now();
         data.createdBy = userId;
 
-        // const card = await depManager.CARD.getCardModel().create(data);
+        const card = await depManager.CARD.getCardModel().create(data);
 
-        // await depManager.ANALYTICS.getAnalyticsModel().create({cardId: card._id});
+        await depManager.ANALYTICS.getAnalyticsModel().create({cardId: card._id});
 
-        return responser.success(res, data.picture, "CARD_S001");
+        return responser.success(res, card, "CARD_S001");
     }catch(error){
         console.log(error);
         return responser.success(res, null, "CARD_E001");
@@ -51,13 +51,18 @@ async function update(req, res){
         const { cardId } = req.query;
         const data = req.body;
 
+        delete data?.deleted;
+        delete data?.updated;
+        delete data?.created;
+        delete data?.createdBy;
+
         data.updated = Date.now();
 
-        const card = await depManager.CARD.getCardModel().updateOne({_id: cardId}, data);
+        const card = await depManager.CARD.getCardModel().findByIdAndUpdate(cardId, data, { new: true });
 
         return responser.success(res, card, "CARD_S002");
     }catch(error){
-        return responser.success(res, null, "CARD_E001");
+        return responser.success(res, error, "CARD_E001");
     }
 }
 
