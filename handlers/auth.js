@@ -40,11 +40,14 @@ app.get(
     "/auth/google/callback",  
     passport.authenticate('google', { failureRedirect: `https://bizcard-spiderlingz.web.app/auth/callback` }), 
     processHandler(service.authCallback));
-app.get("/auth/github", passportMiddleware, processHandler(service.githubAuth));
+
+    app.get("/auth/github", passportMiddleware, processHandler(service.githubAuth));
 app.get(
     "/auth/github/callback",  
     passport.authenticate('github', { failureRedirect: `https://bizcard-spiderlingz.web.app/auth/callback` }), 
     processHandler(service.authCallback));
+
+app.get("/auth/linkedin/callback", processHandler(service.linkedinAuth))
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false

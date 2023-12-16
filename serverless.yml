@@ -45,6 +45,10 @@ functions:
           path: /auth/github/callback
           method: GET
           cors: true
+      - http:
+          path: /auth/linkedin/callback
+          method: GET
+          cors: true
   token:
     handler: ./handlers/token.handler
     events:
