@@ -3,9 +3,9 @@ const depManager = require("../core/depManager");
 const { generateTokens } = require("./token");
 const responser = require("../core/responser");
 
-async function facebookAuth(req, res, next){
+async function githubAuth(req, res, next){
     const passport = req.passport;
-    passport.authenticate('facebook')(req, res, next);
+    passport.authenticate('github')(req, res, next);
 }
 
 async function googleAuth(req, res, next){
@@ -112,7 +112,7 @@ async function loginWithEmail(req, res){
 
 module.exports = {
     googleAuth,
-    facebookAuth,
+    githubAuth,
     authCallback,
     signupWithEmail,
     loginWithEmail

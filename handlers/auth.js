@@ -40,10 +40,10 @@ app.get(
     "/auth/google/callback",  
     passport.authenticate('google', { failureRedirect: `${process.env.AUTH_DOMAIN}/auth/callback` }), 
     processHandler(service.authCallback));
-app.get("/auth/facebook", passportMiddleware, processHandler(service.facebookAuth));
+app.get("/auth/github", passportMiddleware, processHandler(service.githubAuth));
 app.get(
-    "/auth/facebook/callback",  
-    passport.authenticate('facebook', { failureRedirect: `${process.env.AUTH_DOMAIN}/auth/callback` }), 
+    "/auth/github/callback",  
+    passport.authenticate('github', { failureRedirect: `${process.env.AUTH_DOMAIN}/auth/callback` }), 
     processHandler(service.authCallback));
 
 module.exports.handler = serverless(app, {
