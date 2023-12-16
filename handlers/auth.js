@@ -38,12 +38,12 @@ app.post("/auth/login", processHandler(service.loginWithEmail));
 app.get("/auth/google", passportMiddleware, processHandler(service.googleAuth));
 app.get(
     "/auth/google/callback",  
-    passport.authenticate('google', { failureRedirect: `${process.env.AUTH_DOMAIN}/auth/callback` }), 
+    passport.authenticate('google', { failureRedirect: `https://bizcard-spiderlingz.web.app/auth/callback` }), 
     processHandler(service.authCallback));
 app.get("/auth/github", passportMiddleware, processHandler(service.githubAuth));
 app.get(
     "/auth/github/callback",  
-    passport.authenticate('github', { failureRedirect: `${process.env.AUTH_DOMAIN}/auth/callback` }), 
+    passport.authenticate('github', { failureRedirect: `https://bizcard-spiderlingz.web.app/auth/callback` }), 
     processHandler(service.authCallback));
 
 module.exports.handler = serverless(app, {
