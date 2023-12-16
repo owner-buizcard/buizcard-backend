@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const depManager = require("../core/depManager");
 const { generateTokens } = require("./token");
 const responser = require("../core/responser");
+const { default: axios } = require('axios');
 
 async function githubAuth(req, res, next){
     const passport = req.passport;
