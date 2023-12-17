@@ -83,6 +83,8 @@ async function authCallback(req, res){
 
     const user = req.user;
 
+    console.log(user);
+
     let oldUser = await depManager.USER.getUserModel().findOne({provider: user.provider, providerId: user.providerId});
     
     let accessToken;
