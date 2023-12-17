@@ -39,13 +39,13 @@ app.get("/auth/google", passportMiddleware, processHandler(service.googleAuth));
 app.get(
     "/auth/google/callback",  
     passport.authenticate('google', { failureRedirect: `https://bizcard-spiderlingz.web.app/auth/callback` }), 
-    processHandler(service.authCallback));
+    processHandler(service.googleCallback));
 
     app.get("/auth/github", passportMiddleware, processHandler(service.githubAuth));
 app.get(
     "/auth/github/callback",  
     passport.authenticate('github', { failureRedirect: `https://bizcard-spiderlingz.web.app/auth/callback` }), 
-    processHandler(service.authCallback));
+    processHandler(service.githubCallback));
 
 app.get("/auth/linkedin/callback", processHandler(service.linkedinAuth))
 

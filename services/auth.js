@@ -79,7 +79,7 @@ async function linkedinAuth(req, res){
     }
 }
 
-async function authCallback(req, res){
+async function googleCallback(req, res){
 
     const user = req.user;
 
@@ -118,6 +118,45 @@ async function authCallback(req, res){
         const createdUser = await depManager.USER.getUserModel().create(data);
 
         console.log(createdUser);
+
+        accessToken = generateTokens(createdUser._id).accessToken;
+    }
+
+    res.redirect(`https://bizcard-spiderlingz.web.app/auth/callback?token=${accessToken}`);
+}
+
+
+async function githubCallback(req, res){
+
+    const user = req.user;
+
+    let oldUser = await depManager.USER.getUserModel().findOne({provider: user.provider, providerId: user.providerId});
+    
+    let accessToken;
+    
+    if(oldUser!=null){
+
+        oldUser.lastLogin = Date.now();
+        await oldUser.save();
+
+        accessToken = generateTokens(oldUser._id).accessToken;
+
+    }else{
+
+        const userJson = user._json;
+
+        const data = {
+            firstName: user.username,
+            displayName: user.displayName,
+            email: user.emails[0]?.value,
+            emailVerified: userJson.email_verified,
+            provider: user.provider,
+            providerId: user.id,
+            created: Date.now(),
+            registrationStatus: 'registered'
+        }
+
+        const createdUser = await depManager.USER.getUserModel().create(data);
 
         accessToken = generateTokens(createdUser._id).accessToken;
     }
@@ -246,7 +285,8 @@ module.exports = {
     googleAuth,
     githubAuth,
     linkedinAuth,
-    authCallback,
+    googleCallback,
+    githubCallback,
     signupWithEmail,
     loginWithEmail,
     forgotPassword,
