@@ -1,6 +1,6 @@
 const passport = require('passport');
 const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
-const { Strategy: GitHubStrategy } = require('passport-github');
+const { Strategy: GitHubStrategy } = require('passport-github2');
 
 module.exports = ()=>{
 
@@ -23,7 +23,8 @@ module.exports = ()=>{
           {
             clientID: "27baeb96fc320da34956",
             clientSecret: "a75bfed571cab31fab92501034f414cab4a080f2",
-            callbackURL: "https://x9a0br47t1.execute-api.us-east-1.amazonaws.com/dev/auth/github/callback"
+            callbackURL: "https://x9a0br47t1.execute-api.us-east-1.amazonaws.com/dev/auth/github/callback",
+            scope: ['user:email', 'read:user']
           },
           async(accessToken, refreshToken, profile, done) => {
               console.log(profile);
