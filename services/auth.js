@@ -34,13 +34,19 @@ async function linkedinAuth(req, res){
             }
         })
 
+        console.log(response);
+
         const access_token = response?.data?.access_token;
+
+        console.log(access_token);
 
         const linkedinData = await axios.get("https://api.linkedin.com/v2/userinfo", {
             headers: {
                 'Authorization': `Bearer ${access_token}`
             }
         })
+
+        console.log(linkedinData);
 
         let oldUser = await depManager.USER.getUserModel().findOne({email: linkedinData?.email});
         
