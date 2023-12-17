@@ -157,7 +157,7 @@ module.exports.generatePreviewImage = async(jobId)=>{
 module.exports.sendEmail=async(toEmail, subject, renderedTemplate)=>{
 
   const sgMail = require('@sendgrid/mail')
-  sgMail.setApiKey("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")
+  sgMail.setApiKey("SG._6fEVV0VTB66hHmAgdUU-g.wNwV4dmqAxIeSVvkF4mJdQg3x4aiATLL4FmRQ_KqeFg")
 
   try{
 
