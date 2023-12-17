@@ -11,6 +11,11 @@ function generateTokens(userId) {
     return { accessToken, refreshToken };
 }
 
+function generateResetToken(userId) {
+  const token = JWT.sign({ sub: userId }, accessTokenSecret, { expiresIn: '1h' });
+  return token;
+}
+
 function verifyToken(token) {
     try {
       const decoded = JWT.verify(token, accessTokenSecret);
@@ -38,5 +43,6 @@ function getAccessToken(req, res) {
 module.exports = {
     generateTokens,
     verifyToken,
-    getAccessToken
+    getAccessToken,
+    generateResetToken
 }

@@ -49,6 +49,14 @@ functions:
           path: /auth/linkedin/callback
           method: GET
           cors: true
+      - http:
+          path: /auth/password/forgot
+          method: POST
+          cors: true
+      - http:
+          path: /auth/password/reset
+          method: PUT
+          cors: true
   token:
     handler: ./handlers/token.handler
     events:

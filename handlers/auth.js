@@ -49,6 +49,15 @@ app.get(
 
 app.get("/auth/linkedin/callback", processHandler(service.linkedinAuth))
 
+app.post("/auth/password/forgot", processHandler(service.forgotPassword));
+
+
+const { validateAccessToken } = require('../middlewares/authenticate');
+
+app.use(validateAccessToken);
+
+app.put("/auth/password/reset", processHandler(service.resetPassword));
+
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false
 });

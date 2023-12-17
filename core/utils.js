@@ -151,3 +151,28 @@ module.exports.generatePreviewImage = async(jobId)=>{
   const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
   return file_url;
 }
+
+
+
+module.exports.sendEmail=async(toEmail, subject, renderedTemplate)=>{
+
+  const sgMail = require('@sendgrid/mail')
+  sgMail.setApiKey("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")
+
+  try{
+
+    const msg = {
+      to: toEmail,
+      from: {
+        name: "Bizcard",
+        email: 'owner.bizcard@gmail.com'
+      },
+      subject: subject,
+      html: renderedTemplate
+    }
+
+    await sgMail.send(msg);
+  }catch(e){
+    console.log(e.toString());
+  }
+}

@@ -1,8 +1,11 @@
 const bcrypt = require('bcryptjs');
 const depManager = require("../core/depManager");
-const { generateTokens } = require("./token");
+const { generateTokens, generateResetToken } = require("./token");
 const responser = require("../core/responser");
+const path = require('path');
+const fs = require('fs');
 const { default: axios } = require('axios');
+const { sendEmail } = require('../core/utils');
 
 async function githubAuth(req, res, next){
     const passport = req.passport;
@@ -173,6 +176,63 @@ async function loginWithEmail(req, res){
     }
 }
 
+async function forgotPassword(req, res, next){
+
+    try{
+        const { email } = req.body;
+    
+        const user = await depManager.USER.getUserModel().findOne({email: email});
+
+        if(!user){
+            return responser.success(res, null, "AUTH_E003");
+        }
+
+        const rootPath = process.cwd();
+        const templatePath = path.join(rootPath,'templates', 'password_reset_template.html');
+        const htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
+
+        const token = generateResetToken(user._id);
+        const resetLink = `http://localhost:6000/password/reset?token=${token}`;
+
+        const renderedTemplate = htmlTemplate.replace('[User]', `${user?.firstName} ${user.lastName}`).replace('[RESET_LINK]', resetLink);
+        
+        await sendEmail(user.email, "Password Reset", renderedTemplate);
+
+        return responser.success(res, true, "AUTH_S004");
+
+    }catch(error){
+        console.log(error);
+        return responser.error(res, null, "AUTH_E001");
+    }
+}
+
+async function resetPassword(req, res, next){
+
+    try{
+
+        const userId = req.userId;
+        const user = await depManager.USER.getUserModel().findById(userId);
+    
+        if(!user){
+            return responser.success(res, null, "AUTH_E003");
+        }
+    
+        const { newPassword } = req.body;
+    
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+    
+        await user.save();
+    
+        return responser.success(res, true, "AUTH_S005");
+
+    }catch(error){
+        console.log(error);
+        return responser.error(res, null, "AUTH_E001");
+    }
+}
+
+
 module.exports = {
     googleAuth,
     githubAuth,
@@ -180,5 +240,6 @@ module.exports = {
     authCallback,
     signupWithEmail,
     loginWithEmail,
-    
+    forgotPassword,
+    resetPassword
 }
