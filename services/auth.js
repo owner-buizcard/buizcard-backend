@@ -243,7 +243,7 @@ async function forgotPassword(req, res, next){
         const htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
 
         const token = generateResetToken(user._id);
-        const resetLink = `http://localhost:6000/password/reset?token=${token}`;
+        const resetLink = `https://bizcard-spiderlingz.web.app/password/reset?token=${token}`;
 
         const renderedTemplate = htmlTemplate.replace('[User]', `${user?.firstName} ${user.lastName}`).replace('[RESET_LINK]', resetLink);
         
