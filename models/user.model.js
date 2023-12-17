@@ -12,6 +12,11 @@ const _userSchema = new Schema({
         default: null,  
         maxLength: 40
     },
+    displayName: {
+        type: String,
+        default: null,  
+        maxLength: 40
+    },
     designation: {
         type: String,
         default: null,

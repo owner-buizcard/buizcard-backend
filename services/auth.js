@@ -97,14 +97,18 @@ async function authCallback(req, res){
         accessToken = generateTokens(oldUser._id).accessToken;
 
     }else{
+
+        const userJson = user._json;
+
         const data = {
-            firstName: user.given_name,
-            lastName: user.family_name,
-            picture: user.picture,
+            firstName: userJson.given_name,
+            lastName: userJson.family_name,
+            displayName: userJson.name,
+            picture: userJson.picture,
             customPicture: true,
-            email: user.email,
-            emailVerified: user.email_verified,
-            locale: user.locale,
+            email: userJson.email,
+            emailVerified: userJson.email_verified,
+            locale: userJson.locale,
             provider: user.provider,
             providerId: user.id,
             created: Date.now(),
@@ -112,6 +116,9 @@ async function authCallback(req, res){
         }
 
         const createdUser = await depManager.USER.getUserModel().create(data);
+
+        console.log(createdUser);
+
         accessToken = generateTokens(createdUser._id).accessToken;
     }
 
