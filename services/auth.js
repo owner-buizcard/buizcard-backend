@@ -168,7 +168,7 @@ async function githubCallback(req, res){
 
 async function signupWithEmail(req, res){
     try{
-        const {email, password, firstName, lastName} = req.body;
+        const {email, password, firstName, lastName, company} = req.body;
         const UserModel = depManager.USER.getUserModel();
 
         const user = await UserModel.findOne({email: email});
@@ -183,6 +183,7 @@ async function signupWithEmail(req, res){
             firstName: firstName,
             lastName: lastName,
             email: email,
+            company: company,
             password: hashedPassword,
             provider: "EMAIL",
             providerId: email,
