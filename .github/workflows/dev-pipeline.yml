@@ -1,36 +1,3 @@
-name: AWS Lambda Deployment
-
-on:
-  push:
-    branches:
-      - dev
-
-jobs:
-  deploy:
-    name: Deploy to AWS Lambda
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-
-      - name: Install serverless framework
-        run: npm install -g serverless
-
-      - name: Install serverless-offline plugin
-        run: npm install --save-dev serverless-offline
-
-      - name: Deploy to AWS Lambda
-        run: |
-          serverless config credentials --provider aws --key ${{ secrets.AWS_ACCESS_KEY_ID }} --secret ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          serverless deploy
-
-
 name: Bizcard AI API - Dev
 on:
   push:
