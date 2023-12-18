@@ -1,56 +1,50 @@
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
-const path = require('path');
 const { generatePreviewImage, uploadFile } = require("../core/utils");
 
-async function create(req, res){
-    try{
+async function create(req, res) {
+    try {
+        const { userId, body, files } = req;
+        const fileKeys = ['picture', 'logo', 'banner', 'qrLogo'];
+
+        const uploadFilePromises = fileKeys.map(async (fileKey) => {
+            const file = files[fileKey];
+            if (file) {
+                if (fileKey.startsWith("qr")) {
+                    body['qr'] = { ...body['qr'], ['logo']: await uploadFile(`card/${userId}/${fileKey}`, file) };
+                } else {
+                    body[fileKey] = await uploadFile(`card/${userId}/${fileKey}`, file);
+                }
+            }
+        });
+
+        await Promise.all(uploadFilePromises);
+
+        const data = {
+            ...body,
+            created: Date.now(),
+            createdBy: userId,
+        };
+
+        const card = await depManager.CARD.getCardModel().create(data);
+        await depManager.ANALYTICS.getAnalyticsModel().create({ cardId: card._id });
+
+        const cardLink = `${process.env.ORIGIN}/app/p?cardId=${card._id}`;
+        const previewImage = await generatePreviewImage(card);
+
+        card.cardLink = cardLink;
+        card.linkPreviewImage = previewImage;
         
-        // const fileUrl = await generatePreviewImage("1");
+        await card.save();
 
-        // console.log(req.file);
-
-        // console.log(req.files);
-
-        const picture = req.files?.picture;
-        const uploaded = await uploadFile(`card`, picture)
-        return responser.success(res, uploaded, "CARD_S001");
-
-
-        // const logo = req.files?.logo;
-        // const banner = req.files?.banner;
-
-        // if(picture){
-        //     // const uploadPath = path.join(__dirname, 'uploads/', picture.name);
-        //     // await picture.mv(uploadPath);
-
-        //     data.picture = await uploadFile(`card/${userId}`, picture)
-        // }
-        // if(logo){
-        //     data.logo = await uploadFile(`card/${userId}`, logo)
-        // }
-        // if(banner){
-        //     data.banner = await uploadFile(`card/${userId}`, banner)
-        // }
-
-        //////////////////////////////////////////////////////////////////////////////////////////
-
-        // const userId = req.userId;
-        // let data = req.body;
-        
-        // data.created = Date.now();
-        // data.createdBy = userId;
-
-        // const card = await depManager.CARD.getCardModel().create(data);
-
-        // await depManager.ANALYTICS.getAnalyticsModel().create({cardId: card._id});
-
-        // return responser.success(res, card, "CARD_S001");
-    }catch(error){
-        console.log(error);
+        return responser.success(res, card, "CARD_S001");
+    } catch (error) {
+        console.error(error);
         return responser.success(res, null, "CARD_E001");
     }
 }
+
+
 
 async function update(req, res){
     try{

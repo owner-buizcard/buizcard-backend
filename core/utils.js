@@ -61,7 +61,6 @@ module.exports.uploadFile=async(folderName, file)=>{
 }
 
 module.exports.uploadObjectToS3Bucket = async (objectName, mimeType, objectData) => {
-  console.log()
   const aws = require('aws-sdk');
   const BUCKET_NAME = process.env.S3_BUCKET_NAME;
   const params = {
@@ -77,7 +76,7 @@ module.exports.uploadObjectToS3Bucket = async (objectName, mimeType, objectData)
   return url;
 };
 
-module.exports.generatePreviewImage = async(jobId)=>{
+module.exports.generatePreviewImage = async(card)=>{
 
   const qr = require('qrcode');
   const Jimp = require('jimp');
@@ -85,31 +84,31 @@ module.exports.generatePreviewImage = async(jobId)=>{
   const backgroundImagePath =
     'https://firebasestorage.googleapis.com/v0/b/bizcard-web.appspot.com/o/preview%2Fbackground.png?alt=media&token=214f70c1-4f00-46bb-a4a9-9bf93b3a8666';
 
-  const profileUrl =
-    'https://firebasestorage.googleapis.com/v0/b/bizcard-web.appspot.com/o/WhatsApp%20Image%202023-11-23%20at%2010.30.25%20PM.jpeg?alt=media&token=c853d384-161f-49cc-bf91-a590f81d0cc8';
-
-  const qrData = `test`;
+    
+  const qrData = `${process.env.ORIGIN}/app/p?cardId=${card._id}`;
   let qrDataURL = await qr.toDataURL(qrData, { margin: 1 });
 
   // Make images readable
   let [image, qrImage, profileImage] = await Promise.all([
     Jimp.read(backgroundImagePath),
     Jimp.read(Buffer.from(qrDataURL.split(',')[1], 'base64')),
-    Jimp.read(profileUrl),
+    card.picture!=null ? Jimp.read(card.picture) : null
   ]);
 
   // Combine image with QR code
   image.resize(image.bitmap.width * 0.5, image.bitmap.height * 0.5);
   qrImage.resize(image.bitmap.height * 0.4, image.bitmap.height * 0.4);
 
-  profileImage.resize(image.bitmap.height * 0.4, image.bitmap.height * 0.4);
-
   const xPosition = image.bitmap.width - qrImage.bitmap.width - 45;
   const yPosition = (image.bitmap.height - qrImage.bitmap.height) / 1.2;
 
   image.composite(qrImage, xPosition, yPosition);
 
-  image.composite(profileImage, 20, 20);
+  if(profileImage){
+    profileImage.resize(image.bitmap.height * 0.4, image.bitmap.height * 0.4);
+    image.composite(profileImage, 20, 20);
+  }
+
 
   // Your HTML content goes here
   // const htmlContent = `<div style="margin: 16px; color: black; font-size: 24px; background: transparent; position: relative; height: 320px; width: 560px">
@@ -139,7 +138,7 @@ module.exports.generatePreviewImage = async(jobId)=>{
 
   let buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
 
-  const _fileUrl = await this.uploadObjectToS3Bucket(`previewImage.jpg`, 'image/jpeg', buffer);
+  const _fileUrl = await this.uploadObjectToS3Bucket(`${card._id}/previewImage.jpg`, 'image/jpeg', buffer);
   const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
   return file_url;
 }

@@ -161,6 +161,14 @@ const _cardSchema = new Schema({
             default: "#008080"
         }
     },
+    cardLink: {
+        type: String,
+        default: null
+    },
+    linkPreviewImage: {
+        type: String,
+        default: null
+    },
     qrVisible: {
         type: Boolean,
         default: false
