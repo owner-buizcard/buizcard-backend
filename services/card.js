@@ -8,12 +8,18 @@ async function create(req, res) {
         const fileKeys = ['picture', 'logo', 'banner', 'qrLogo'];
 
         const uploadFilePromises = fileKeys.map(async (fileKey) => {
-            const file = files[fileKey];
-            if (file) {
-                if (fileKey.startsWith("qr")) {
-                    body['qr'] = { ...body['qr'], ['logo']: await uploadFile(`card/${userId}/${fileKey}`, file) };
-                } else {
-                    body[fileKey] = await uploadFile(`card/${userId}/${fileKey}`, file);
+            if(files){
+                if ((fileKey in files)) {
+                
+                    const file = files[fileKey];
+
+                    if (file) {
+                        if (fileKey.startsWith("qr")) {
+                            body['qr'] = { ...body['qr'], ['logo']: await uploadFile(`card/${userId}/${fileKey}`, file) };
+                        } else {
+                            body[fileKey] = await uploadFile(`card/${userId}/${fileKey}`, file);
+                        }
+                    }
                 }
             }
         });
