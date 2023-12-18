@@ -25,6 +25,7 @@ provider:
     FROM_EMAIL: ${file(./config/config.${self:custom.currentStage}.json):FROM_EMAIL}
     FROM_EMAIL_NAME: ${file(./config/config.${self:custom.currentStage}.json):FROM_EMAIL_NAME}
     DOMAIN: ${file(./config/config.${self:custom.currentStage}.json):DOMAIN}
+    S3_BUCKET_NAME: ${file(./config/config.${self:custom.currentStage}.json):S3_BUCKET_NAME}
 
 custom:
   prune:
