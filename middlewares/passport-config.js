@@ -7,9 +7,9 @@ module.exports = ()=>{
     passport.use(
         new GoogleStrategy(
             {
-              clientID: "532842629098-ca7lrte0pjkof9btf77iqofuq59184s3.apps.googleusercontent.com",
-              clientSecret: "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",
-              callbackURL: "https://x9a0br47t1.execute-api.us-east-1.amazonaws.com/dev/auth/google/callback"
+              clientID: process.env.GOOGLE_CLIENT_ID,
+              clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+              callbackURL: process.env.GOOGLE_CALL_BACK
             },
             async(accessToken, refreshToken, profile, done) => {
                 console.log(profile);
@@ -21,9 +21,9 @@ module.exports = ()=>{
     passport.use(
       new GitHubStrategy (
           {
-            clientID: "27baeb96fc320da34956",
-            clientSecret: "a75bfed571cab31fab92501034f414cab4a080f2",
-            callbackURL: "https://x9a0br47t1.execute-api.us-east-1.amazonaws.com/dev/auth/github/callback",
+            clientID: process.env.GITHUB_CLIENT_ID,
+            clientSecret: process.env.GITHUB_CLIENT_SECRET,
+            callbackURL: process.env.GITHUB_CALL_BACK,
             scope: ['user:email', 'read:user']
           },
           async(accessToken, refreshToken, profile, done) => {

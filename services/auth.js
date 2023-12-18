@@ -24,9 +24,9 @@ async function linkedinAuth(req, res){
         const params = new URLSearchParams();
         params.append("grant_type", "authorization_code");
         params.append("code", code);
-        params.append("client_id", "864hy6jn3uyw75");
-        params.append("client_secret", "ShBuFryvw8eV58zu");
-        params.append("redirect_uri", "https://x9a0br47t1.execute-api.us-east-1.amazonaws.com/dev/auth/linkedin/callback");
+        params.append("client_id", process.env.LINKEDIN_CLIENT_ID);
+        params.append("client_secret", process.env.LINKEDIN_CLIENT_SECRET);
+        params.append("redirect_uri", process.env.LINKEDIN_CALL_BACK);
         
         const response = await axios.post("https://www.linkedin.com/oauth/v2/accessToken", params, {
             headers: {
@@ -75,7 +75,7 @@ async function linkedinAuth(req, res){
             accessToken = generateTokens(createdUser._id).accessToken;
         }
 
-        res.redirect(`https://bizcard-spiderlingz.web.app/auth/callback?token=${accessToken}`);
+        res.redirect(`${process.env.DOMAIN}/auth/callback?token=${accessToken}`);
     }catch(error){
         return responser.error(res, error, "GLOBAL_E001");
     }
@@ -124,7 +124,7 @@ async function googleCallback(req, res){
         accessToken = generateTokens(createdUser._id).accessToken;
     }
 
-    res.redirect(`https://bizcard-spiderlingz.web.app/auth/callback?token=${accessToken}`);
+    res.redirect(`${process.env.DOMAIN}/auth/callback?token=${accessToken}`);
 }
 
 
@@ -163,7 +163,7 @@ async function githubCallback(req, res){
         accessToken = generateTokens(createdUser._id).accessToken;
     }
 
-    res.redirect(`https://bizcard-spiderlingz.web.app/auth/callback?token=${accessToken}`);
+    res.redirect(`${process.env.DOMAIN}/auth/callback?token=${accessToken}`);
 }
 
 async function signupWithEmail(req, res){
@@ -243,7 +243,7 @@ async function forgotPassword(req, res, next){
         const htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
 
         const token = generateResetToken(user._id);
-        const resetLink = `https://bizcard-spiderlingz.web.app/password/reset?token=${token}`;
+        const resetLink = `${process.env.DOMAIN}/password/reset?token=${token}`;
 
         const renderedTemplate = htmlTemplate.replace('[User]', `${user?.firstName} ${user.lastName}`).replace('[RESET_LINK]', resetLink);
         

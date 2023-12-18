@@ -157,15 +157,15 @@ module.exports.generatePreviewImage = async(jobId)=>{
 module.exports.sendEmail=async(toEmail, subject, renderedTemplate)=>{
 
   const sgMail = require('@sendgrid/mail')
-  sgMail.setApiKey("SG._6fEVV0VTB66hHmAgdUU-g.wNwV4dmqAxIeSVvkF4mJdQg3x4aiATLL4FmRQ_KqeFg")
+  sgMail.setApiKey(process.env.EMAIL_API_KEY)
 
   try{
 
     const msg = {
       to: toEmail,
       from: {
-        name: "Bizcard",
-        email: 'owner.bizcard@gmail.com'
+        name: process.env.FROM_EMAIL_NAME,
+        email: process.env.FROM_EMAIL
       },
       subject: subject,
       html: renderedTemplate

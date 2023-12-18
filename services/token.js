@@ -2,7 +2,7 @@
 const JWT = require('jsonwebtoken');
 const responser = require("../core/responser");
 
-const accessTokenSecret = 'e913335d263a473e3d822d5c59b2f4116ea683d66660a7d2aa874c78bda03c0d';
+const accessTokenSecret = process.env.TOKEN_SECRET;
 
 function generateTokens(userId) {
     const accessToken = JWT.sign({ sub: userId }, accessTokenSecret, { expiresIn: '7d' });
