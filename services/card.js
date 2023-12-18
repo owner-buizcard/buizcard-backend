@@ -10,12 +10,13 @@ async function create(req, res){
 
         // console.log(req.file);
 
-        const userId = req.userId;
-        let data = req.body;
-
         // console.log(req.files);
 
-        // const picture = req.files?.picture;
+        const picture = req.files?.picture;
+        const uploaded = await uploadFile(`card`, picture)
+        return responser.success(res, uploaded, "CARD_S001");
+
+
         // const logo = req.files?.logo;
         // const banner = req.files?.banner;
 
@@ -31,15 +32,20 @@ async function create(req, res){
         // if(banner){
         //     data.banner = await uploadFile(`card/${userId}`, banner)
         // }
+
+        //////////////////////////////////////////////////////////////////////////////////////////
+
+        // const userId = req.userId;
+        // let data = req.body;
         
-        data.created = Date.now();
-        data.createdBy = userId;
+        // data.created = Date.now();
+        // data.createdBy = userId;
 
-        const card = await depManager.CARD.getCardModel().create(data);
+        // const card = await depManager.CARD.getCardModel().create(data);
 
-        await depManager.ANALYTICS.getAnalyticsModel().create({cardId: card._id});
+        // await depManager.ANALYTICS.getAnalyticsModel().create({cardId: card._id});
 
-        return responser.success(res, card, "CARD_S001");
+        // return responser.success(res, card, "CARD_S001");
     }catch(error){
         console.log(error);
         return responser.success(res, null, "CARD_E001");

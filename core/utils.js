@@ -50,12 +50,6 @@ module.exports.getDDMMYYYY = (currentDate = new Date(), seperator = '-') => {
   return formattedDate;
 
 }
-
-const accessKeyId = 'AKIATPFKBFSE5AYZRBKA';
-const secretAccessKey = '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';
-const region = 'ap-south-1';
-const BUCKET = 'bc-dev-v1';
-
 module.exports.uploadFile=async(folderName, file)=>{
   let _uploadFolder = folderName;
   var extension = file.name.substr(file.name.lastIndexOf(".") + 1, file.name.length - 1);
@@ -67,20 +61,18 @@ module.exports.uploadFile=async(folderName, file)=>{
 }
 
 module.exports.uploadObjectToS3Bucket = async (objectName, mimeType, objectData) => {
+  console.log()
   const aws = require('aws-sdk');
-  const BUCKET_NAME = 'bc-dev-v1';
+  const BUCKET_NAME = process.env.S3_BUCKET_NAME;
   const params = {
     Bucket: BUCKET_NAME,
-    Key: 'test.jpeg',
+    Key: objectName,
     Body: objectData,
-    ContentEncoding: 'base64',
     ContentType: mimeType,
   };
-  console.log(params)
   const s3 = new aws.S3({});
   const _result = await s3.putObject(params).promise();
-  console.log(_result)
-  const _params = { Bucket: BUCKET_NAME, Key: 'test.jpeg' };
+  const _params = { Bucket: BUCKET_NAME, Key: objectName };
   const url = s3.getSignedUrl('getObject', _params);
   return url;
 };

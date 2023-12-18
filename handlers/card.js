@@ -41,7 +41,7 @@ app.use(cors_origin());
 
 app.get("/card-preview", processHandler(service.get));
 
-app.use(validateAccessToken);
+// app.use(validateAccessToken);
 
 app.post("/card", processHandler(service.create));
 app.put("/card", processHandler(service.update));
