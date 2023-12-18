@@ -10,7 +10,21 @@ provider:
   timeout: 30
   stage: local
   environment:
-    API_KEY: ${file(./config/config.${self:custom.currentStage}.json):API_KEY}
+    TOKEN_SECRET: ${file(./config/config.${self:custom.currentStage}.json):TOKEN_SECRET}
+    SESSION_SECRET: ${file(./config/config.${self:custom.currentStage}.json):SESSION_SECRET}
+    GOOGLE_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CLIENT_ID}
+    GOOGLE_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CLIENT_SECRET}
+    GOOGLE_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CALL_BACK}
+    GITHUB_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CLIENT_ID}
+    GITHUB_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CLIENT_SECRET}
+    GITHUB_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CALL_BACK}
+    LINKEDIN_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CLIENT_ID}
+    LINKEDIN_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CLIENT_SECRET}
+    LINKEDIN_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CALL_BACK}
+    EMAIL_API_KEY: ${file(./config/config.${self:custom.currentStage}.json):EMAIL_API_KEY}
+    FROM_EMAIL: ${file(./config/config.${self:custom.currentStage}.json):FROM_EMAIL}
+    FROM_EMAIL_NAME: ${file(./config/config.${self:custom.currentStage}.json):FROM_EMAIL_NAME}
+    DOMAIN: ${file(./config/config.${self:custom.currentStage}.json):DOMAIN}
 
 custom:
   prune:
