@@ -30,7 +30,7 @@ const passportMiddleware = (req, res, next) => {
     next();
 };
 
-app.get("/ping", (req,res)=>res.send("success"));
+app.get("/ping", (req,res)=>res.send(process.env.API_KEY));
 
 app.post("/auth/signup", processHandler(service.signupWithEmail));
 app.post("/auth/login", processHandler(service.loginWithEmail));

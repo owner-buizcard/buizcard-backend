@@ -8,7 +8,7 @@ provider:
   name: aws
   runtime: nodejs18.x
   timeout: 30
-  stage: local
+  stage: dev
   environment:
     API_KEY: ${file(./config/config.${self:custom.currentStage}.json):API_KEY}
 
@@ -18,7 +18,7 @@ custom:
     number: 1
   serverless-offline:
     httpPort: 4000
-  defaultStage: local
+  defaultStage: dev
   currentStage: ${opt:stage, self:custom.defaultStage}
   stage: ${self:custom.currentStage}
 
