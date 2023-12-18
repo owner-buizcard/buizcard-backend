@@ -76,72 +76,98 @@ module.exports.uploadObjectToS3Bucket = async (objectName, mimeType, objectData)
   return url;
 };
 
-module.exports.generatePreviewImage = async(card)=>{
 
+
+module.exports.generatePreviewImage = async (card) => {
   const qr = require('qrcode');
   const Jimp = require('jimp');
-  
-  const backgroundImagePath =
-    'https://firebasestorage.googleapis.com/v0/b/bizcard-web.appspot.com/o/preview%2Fbackground.png?alt=media&token=214f70c1-4f00-46bb-a4a9-9bf93b3a8666';
 
-    
+  const backgroundImagePath ='https://firebasestorage.googleapis.com/v0/b/bizcard-web.appspot.com/o/preview%2Fbackground.png?alt=media&token=214f70c1-4f00-46bb-a4a9-9bf93b3a8666';
+  const appLogoPath = 'https://firebasestorage.googleapis.com/v0/b/bizcard-spiderlingz.appspot.com/o/logo%2Fcard.png?alt=media&token=ded33d94-1fb7-4538-9bd4-e307d8bd778a';
+
   const qrData = `${process.env.ORIGIN}/app/p?cardId=${card._id}`;
-  let qrDataURL = await qr.toDataURL(qrData, { margin: 1 });
+  const qrDataURL = await qr.toDataURL(qrData, { margin: 1 });
 
   // Make images readable
-  let [image, qrImage, profileImage] = await Promise.all([
+  const [image, qrImage, profileImage, appLogo] = await Promise.all([
     Jimp.read(backgroundImagePath),
     Jimp.read(Buffer.from(qrDataURL.split(',')[1], 'base64')),
-    card.picture!=null ? Jimp.read(card.picture) : null
+    card.picture ? Jimp.read(card.picture) : null,
+    Jimp.read(appLogoPath),
   ]);
 
   // Combine image with QR code
   image.resize(image.bitmap.width * 0.5, image.bitmap.height * 0.5);
-  qrImage.resize(image.bitmap.height * 0.4, image.bitmap.height * 0.4);
+  qrImage.resize(image.bitmap.height * 0.3, image.bitmap.height * 0.3);
+  appLogo.resize(appLogo.bitmap.height * 0.08, appLogo.bitmap.height * 0.08);
 
-  const xPosition = image.bitmap.width - qrImage.bitmap.width - 45;
-  const yPosition = (image.bitmap.height - qrImage.bitmap.height) / 1.2;
+  const xPosition = image.bitmap.width - qrImage.bitmap.width - 35;
+  const yPosition = 105;
 
   image.composite(qrImage, xPosition, yPosition);
 
-  if(profileImage){
-    profileImage.resize(image.bitmap.height * 0.4, image.bitmap.height * 0.4);
-    image.composite(profileImage, 20, 20);
+  image.composite(appLogo, image.bitmap.width-180, 20);
+
+  if (profileImage) {
+    profileImage.resize(image.bitmap.height * 0.5, image.bitmap.height * 0.5);
+    profileImage.circle();
+    image.composite(profileImage, 30, (image.bitmap.height / 2) - (profileImage.bitmap.height / 2)-50);
   }
 
+  const boldFont = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
+  const textColor = 0xFF0000; 
+  image.print(
+    boldFont,
+    image.bitmap.width-80, 
+    image.bitmap.height-40, 
+    {
+      text: 'Bizcard',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
+      alignmentY: Jimp.VERTICAL_ALIGN_TOP,
+      rgba: textColor, 
+    },
+    image.bitmap.width - 20 // maximum width
+  );
 
-  // Your HTML content goes here
-  // const htmlContent = `<div style="margin: 16px; color: black; font-size: 24px; background: transparent; position: relative; height: 320px; width: 560px">
-  //   <p style="position: absolute; top: 0px; right: 10px; color: white; font-size: 16px">
-  //     <b>Instrive Softlabs Pvt ltd</b>
-  //   </p>
-  //   <p style="position: absolute; bottom: 60px; ">
-  //     <b>Dhana Sekaran R</b>
-  //   </p>
-  //   <p style="position: absolute; color: dimgrey; font-size: 16px; bottom: 40px;">
-  //     Flutter Developer
-  //   </p>
-  // </div>`;
+  if(card.name?.firstName && card.name?.lastName){
+    const nameFont = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+    image.print(
+      nameFont,
+      30, 
+      image.bitmap.height-90, 
+      {
+        text: `${card.name?.firstName} ${card.name?.lastName}`,
+        alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
+        alignmentY: Jimp.VERTICAL_ALIGN_TOP,
+        rgba: textColor, 
+      },
+      image.bitmap.width - 20 // maximum width
+    );
+  }
 
-  // Use html2canvas to capture the screenshot
-  // const canvas = await html2canvas(document.createRange().createContextualFragment(htmlContent));
-  // const screenshotBuffer = await canvas.toDataURL('image/jpeg');
-  // const screenshotImage = await Jimp.read(Buffer.from(screenshotBuffer.split(',')[1], 'base64'));
+    if(card.company?.title){
+      const subFont = await Jimp.loadFont(Jimp.FONT_SANS_16_BLACK);
+      image.print(
+        subFont,
+        30, 
+        image.bitmap.height-50, 
+        {
+          text: `${card.company?.title}`,
+          alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
+          alignmentY: Jimp.VERTICAL_ALIGN_TOP,
+          rgba: textColor, 
+        },
+        image.bitmap.width - 20 // maximum width
+      );
+    }
 
-  // const maxWidth = image.bitmap.width - 20;
-
-  // image.composite(screenshotImage, 0, 0, {
-  //   mode: Jimp.BLEND_SOURCE_OVER,
-  //   opacitySource: 1,
-  //   opacityDest: 1,
-  // });
-
-  let buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
+  const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
 
   const _fileUrl = await this.uploadObjectToS3Bucket(`${card._id}/previewImage.jpg`, 'image/jpeg', buffer);
   const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
   return file_url;
-}
+};
+
 
 
 

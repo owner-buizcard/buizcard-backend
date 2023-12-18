@@ -13,8 +13,10 @@ app.use(open_origin());
 
 app.get('/app/p', (req, res)=>{
 
-    const imageUrl = "https://bc-dev-v1.s3.ap-south-1.amazonaws.com/previewImage.jpg";
-    const redirectUrl = "https://bizcard-web.web.app/app/cards";
+    const { userId }= req.query;
+
+    const imageUrl = `https://bizcard-dev-v1.s3.amazonaws.com/${userId}/previewImage.jpg`;
+    const redirectUrl = `${process.env.DOMAIN}/app/p?userId=${userId}`;
 
     const metadataHtml = `
         <html>
@@ -30,7 +32,7 @@ app.get('/app/p', (req, res)=>{
             // Redirect to the web app after a delay
             setTimeout(function() {
                 window.location.href = "${redirectUrl}";
-            }, 50); // 2 seconds delay (adjust as needed)
+            }, 10);
             </script>
         </body>
         </html>

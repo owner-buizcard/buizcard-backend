@@ -49,16 +49,34 @@ async function create(req, res) {
 async function update(req, res){
     try{
         const { cardId } = req.query;
-        const data = req.body;
+        const { body, files }= req;
 
-        delete data?.deleted;
-        delete data?.updated;
-        delete data?.created;
-        delete data?.createdBy;
+        const fileKeys = ['picture', 'logo', 'banner', 'qrLogo'];
+        const uploadFilePromises = fileKeys.map(async (fileKey) => {
+            const file = files[fileKey];
+            if (file) {
+                if (fileKey.startsWith("qr")) {
+                    body['qr'] = { ...body['qr'], ['logo']: await uploadFile(`card/${userId}/${fileKey}`, file) };
+                } else {
+                    body[fileKey] = await uploadFile(`card/${userId}/${fileKey}`, file);
+                }
+            }
+        });
 
-        data.updated = Date.now();
+        await Promise.all(uploadFilePromises);
 
-        const card = await depManager.CARD.getCardModel().findByIdAndUpdate(cardId, data, { new: true });
+        delete body?.deleted;
+        delete body?.updated;
+        delete body?.created;
+        delete body?.createdBy;
+
+        body.updated = Date.now();
+
+        const card = await depManager.CARD.getCardModel().findByIdAndUpdate(cardId, body, { new: true });
+        const previewImage = await generatePreviewImage(card);
+
+        card.linkPreviewImage = previewImage;
+        await card.save();
 
         return responser.success(res, card, "CARD_S002");
     }catch(error){
