@@ -4,137 +4,133 @@ const { generatePreviewImage, uploadFile } = require("../core/utils");
 
 async function create(req, res) {
     try {
-        const { userId, body, files } = req;
-        const fileKeys = ['picture', 'logo', 'banner', 'qrLogo'];
-
-        const uploadFilePromises = fileKeys.map(async (fileKey) => {
-            if(files){
-                if ((fileKey in files)) {
-                
-                    const file = files[fileKey];
-
-                    if (file) {
-                        if (fileKey.startsWith("qr")) {
-                            body['qr'] = { ...body['qr'], ['logo']: await uploadFile(`card/${userId}/${fileKey}`, file) };
-                        } else {
-                            body[fileKey] = await uploadFile(`card/${userId}/${fileKey}`, file);
-                        }
-                    }
-                }
-            }
-        });
-
-        await Promise.all(uploadFilePromises);
+        const userId = req.userId;
+        const { cardName, isPublic } = req.body;
 
         const data = {
-            ...body,
+            cardName,
+            isPublic,
             created: Date.now(),
             createdBy: userId,
         };
 
         const card = await depManager.CARD.getCardModel().create(data);
-        await depManager.ANALYTICS.getAnalyticsModel().create({ cardId: card._id });
-
-
 
         const cardLink = `${process.env.ORIGIN}/app/p?cardId=${card._id}`;
         card.cardLink = cardLink;
 
-        try{
-            const previewImage = await generatePreviewImage(card);
-            card.linkPreviewImage = previewImage;
-        }catch(e){}
-        
-        await card.save();
+        await Promise.all([
+            card.save(),
+            depManager.ANALYTICS.getAnalyticsModel().create({ cardId: card._id }),
+        ]);
 
         return responser.success(res, card, "CARD_S001");
     } catch (error) {
         console.error(error);
-        return responser.success(res, null, "CARD_E001");
+        return responser.success(res, null, "GLOBAL_E001");
     }
 }
 
-
-
-async function update(req, res){
+async function uploadCardImage(req, res) {
     try{
-        const { cardId } = req.query;
-        const { body, files }= req;
+        const userId = req.userId;
+        const { file } = req.files;
+        const { cardId, key } = req.body;
 
-        const fileKeys = ['picture', 'logo', 'banner', 'qrLogo'];
-        const uploadFilePromises = fileKeys.map(async (fileKey) => {
-            const file = files[fileKey];
-            if (file) {
-                if (fileKey.startsWith("qr")) {
-                    body['qr'] = { ...body['qr'], ['logo']: await uploadFile(`card/${userId}/${fileKey}`, file) };
-                } else {
-                    body[fileKey] = await uploadFile(`card/${userId}/${fileKey}`, file);
-                }
-            }
+        const fileUrl = await uploadFile(`${userId}/card/${cardId}`, file, key);
+
+        return responser.success(res, fileUrl, "CARD_S006");
+    } catch (error) {
+        console.error(error);
+        return responser.success(res, null, "GLOBAL_E001");
+    }
+}
+
+async function update(req, res) {
+    try {
+        const { body, query } = req;
+        const { cardId } = query;
+
+        const card = await depManager.CARD.getCardModel().findById(cardId);
+
+        const updateFields = [
+            "cardName",
+            "bio",
+            "name",
+            "phoneNumber",
+            "email",
+            "address",
+            "company",
+            "picture",
+            "logo",
+            "banner",
+            "fields",
+            "qr",
+            "qrVisible",
+            "qrWithLogo",
+        ];
+
+        updateFields.forEach((field) => {
+            if (body[field]) card[field] = body[field];
         });
 
-        await Promise.all(uploadFilePromises);
+        try {
+            card.linkPreviewImage = await generatePreviewImage(card);
+        } catch (e) {}
 
-        delete body?.deleted;
-        delete body?.updated;
-        delete body?.created;
-        delete body?.createdBy;
-
-        body.updated = Date.now();
-
-        const card = await depManager.CARD.getCardModel().findByIdAndUpdate(cardId, body, { new: true });
-        const previewImage = await generatePreviewImage(card);
-
-        card.linkPreviewImage = previewImage;
         await card.save();
 
         return responser.success(res, card, "CARD_S002");
-    }catch(error){
-        return responser.success(res, error, "CARD_E001");
+    } catch (error) {
+        return responser.success(res, error, "GLOBAL_E001");
     }
 }
 
-async function get(req, res){
-    try{
+async function get(req, res) {
+    try {
         const { cardId } = req.query;
         const card = await depManager.CARD.getCardModel().findById(cardId);
 
         return responser.success(res, card, "CARD_S003");
-    }catch(error){
-        return responser.success(res, null, "CARD_E001");
+    } catch (error) {
+        return responser.success(res, null, "GLOBAL_E001");
     }
 }
 
-async function getUserCards(req, res){
-    try{
+async function getUserCards(req, res) {
+    try {
         const userId = req.userId;
-        const cards = await depManager.CARD.getCardModel().find({createdBy: userId, status: { $ne: "DELETED" }});
+        const cards = await depManager.CARD.getCardModel().find({
+            createdBy: userId,
+            status: { $ne: "DELETED" },
+        });
 
         return responser.success(res, cards, "CARD_S004");
-    }catch(error){
-        return responser.success(res, null, "CARD_E001");
+    } catch (error) {
+        return responser.success(res, null, "GLOBAL_E001");
     }
 }
 
-async function deleteCard(req, res){
-    try{
+async function deleteCard(req, res) {
+    try {
         const { cardId } = req.query;
 
         await Promise.all([
-            depManager.CARD.getCardModel().updateOne({_id: cardId}, {status: "DELETED"}),
-            depManager.ANALYTICS.getAnalyticsModel().deleteOne({cardId: cardId})
-        ])
+            depManager.CARD.getCardModel().updateOne({ _id: cardId }, { status: "DELETED" }),
+            depManager.ANALYTICS.getAnalyticsModel().deleteOne({ cardId: cardId }),
+        ]);
 
         return responser.success(res, true, "CARD_E005");
-    }catch(error){
-        return responser.success(res, null, "CARD_E001");
+    } catch (error) {
+        return responser.success(res, null, "GLOBAL_E001");
     }
 }
 
 module.exports = {
     create,
+    uploadCardImage,
     update,
     get,
     getUserCards,
-    deleteCard
-}
+    deleteCard,
+};

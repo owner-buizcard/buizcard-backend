@@ -177,6 +177,10 @@ const _cardSchema = new Schema({
         type: Boolean,
         default: false
     },
+    isPublic: {
+        type: Boolean,
+        default: false
+    },
     createdBy: {
         type: Schema.Types.ObjectId,
         required: true

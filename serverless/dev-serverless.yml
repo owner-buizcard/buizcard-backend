@@ -115,6 +115,10 @@ functions:
           method: POST
           cors: true
       - http:
+          path: /card-image
+          method: POST
+          cors: true
+      - http:
           path: /card
           method: PUT
           cors: true

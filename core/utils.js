@@ -50,11 +50,13 @@ module.exports.getDDMMYYYY = (currentDate = new Date(), seperator = '-') => {
   return formattedDate;
 
 }
-module.exports.uploadFile=async(folderName, file)=>{
+module.exports.uploadFile=async(folderName, file, fileName)=>{
   let _uploadFolder = folderName;
   var extension = file.name.substr(file.name.lastIndexOf(".") + 1, file.name.length - 1);
   console.log(extension);
-  const newName = `${_uploadFolder}${this.makeid(30)}.${extension}`;
+  const newName = fileName!=null
+    ? `${_uploadFolder}${fileName}.${extension}`
+    : `${_uploadFolder}${this.makeid(30)}.${extension}`;
   const _fileUrl = await this.uploadObjectToS3Bucket(newName, file.mimetype, file.data);
   const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
   return file_url;
