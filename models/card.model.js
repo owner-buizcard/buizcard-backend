@@ -120,11 +120,15 @@ const _cardSchema = new Schema({
                 type: String,
                 default: null
             },
-            name: {
+            title: {
                 type: String,
                 default: null
             },
-            value: {
+            link: {
+                type: String,
+                default: null
+            },
+            icon: {
                 type: String,
                 default: null
             },
