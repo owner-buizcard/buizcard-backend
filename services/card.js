@@ -35,11 +35,15 @@ async function create(req, res) {
         const card = await depManager.CARD.getCardModel().create(data);
         await depManager.ANALYTICS.getAnalyticsModel().create({ cardId: card._id });
 
-        const cardLink = `${process.env.ORIGIN}/app/p?cardId=${card._id}`;
-        const previewImage = await generatePreviewImage(card);
 
+
+        const cardLink = `${process.env.ORIGIN}/app/p?cardId=${card._id}`;
         card.cardLink = cardLink;
-        card.linkPreviewImage = previewImage;
+
+        try{
+            const previewImage = await generatePreviewImage(card);
+            card.linkPreviewImage = previewImage;
+        }catch(e){}
         
         await card.save();
 
