@@ -57,7 +57,7 @@ const _cardSchema = new Schema({
             type: String,
             default: null
         },
-        pinCode: {
+        pincode: {
             type: String,
             default: null
         }
