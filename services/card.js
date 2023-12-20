@@ -16,7 +16,7 @@ async function create(req, res) {
 
         const card = await depManager.CARD.getCardModel().create(data);
 
-        const cardLink = `${process.env.ORIGIN}/app/p?cardId=${card._id}`;
+        const cardLink = `${process.env.ORIGIN}/app/p/${card._id}`;
         card.cardLink = cardLink;
 
         await Promise.all([
