@@ -161,11 +161,11 @@ functions:
     handler: ./handlers/analytics.handler
     events:
       - http:
-          path: /analytics
-          method: PUT
+          path: /card-analytics
+          method: GET
           cors: true
       - http:
-          path: /analytics
+          path: /user-analytics
           method: GET
           cors: true
   share:
