@@ -172,7 +172,7 @@ functions:
     handler: ./handlers/share.handler
     events:
       - http:
-          path: /app/p/{cardId}
+          path: /app/p/card/{cardId}
           method: GET
           cors: true
   card-log:
