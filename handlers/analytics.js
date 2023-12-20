@@ -15,12 +15,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors_origin());
 
-app.put("/analytics", processHandler(service.update));
-
 const { validateAccessToken } = require('../middlewares/authenticate');
 app.use(validateAccessToken);
 
-app.get("/analytics", processHandler(service.get));
+app.get("/user-analytics", processHandler(service.getUserAnalytics));
+app.get("/card-analytics", processHandler(service.getCardAnalytics));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false
