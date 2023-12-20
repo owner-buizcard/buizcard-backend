@@ -5,6 +5,7 @@ const CONTACT = require("../models/contact.model");
 const ANALYTICS = require("../models/analytics.model");
 const BACKGROUND = require("../models/background.model");
 const CONFIG = require("../models/config.model");
+const CARD_LOG = require("../models/card-log.model");
 
 const depManager = {
   // DB
@@ -13,7 +14,8 @@ const depManager = {
   CONTACT,
   ANALYTICS,
   BACKGROUND,
-  CONFIG
+  CONFIG,
+  CARD_LOG
 };
 
 module.exports = depManager;

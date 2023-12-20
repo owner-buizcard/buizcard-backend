@@ -32,10 +32,34 @@ const _analyticsSchema = new Schema({
     }
 })
 
+const _userAnalyticsSchema = new Schema({
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true
+    },
+    viewCount: {
+        type: Number,
+        default: 0
+    },
+    uniqueVisitCount: {
+        type: Number,
+        default: 0
+    },
+    connectedCount: {
+        type: Number,
+        default: 0
+    }
+})
+
 const getAnalyticsModel = () => {
-    return mongoose.model("Analytics", _analyticsSchema, "Analytics");
+    return mongoose.model("CardAnalytics", _analyticsSchema, "CardAnalytics");
+};
+
+const getUserAnalyticsModel = () => {
+    return mongoose.model("UserAnalytics", _userAnalyticsSchema, "UserAnalytics");
 };
 
 module.exports = {
-    getAnalyticsModel
+    getAnalyticsModel,
+    getUserAnalyticsModel
 };

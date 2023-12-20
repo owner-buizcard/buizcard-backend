@@ -175,5 +175,16 @@ functions:
           path: /app/p/{cardId}
           method: GET
           cors: true
+  card-log:
+    handler: ./handlers/card-log.handler
+    events:
+      - http:
+          path: /card-log
+          method: GET
+          cors: true
+      - http:
+          path: /card-log
+          method: POST
+          cors: true
 
 
