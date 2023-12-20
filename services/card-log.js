@@ -57,10 +57,10 @@ async function addCardLog(req, res) {
 
         await analytics.save();
 
-        return responser.success(res, "CONTACT_S001");
+        return responser.success(res, true, "CARDLOG_S001");
     } catch (error) {
         console.error(error);
-        return responser.error(res, "CONTACT_E001", "Error adding card log");
+        return responser.error(res, null, "GLOBAL_E001");
     }
 }
 
@@ -73,10 +73,10 @@ async function getCardLog(req, res) {
             .sort({ created: -1 })
             .limit(parseInt(count, 10) || 10);
 
-        return responser.success(res, logs, "CONTACT_S001");
+        return responser.success(res, logs, "CARDLOG_S002");
     } catch (error) {
         console.error(error);
-        return responser.error(res, "CONTACT_E001", "Error fetching card logs");
+        return responser.error(res, null, "GLOBAL_E001");
     }
 }
 

@@ -39,10 +39,10 @@ async function getUserAnalytics(req, res) {
             totalWebClickCount: 0,
         });
 
-        return responser.success(res, { totals, sortedCardIds }, "CARD_S001");
+        return responser.success(res, { totals, sortedCardIds }, "ANALYTICS_S001");
     } catch (error) {
         console.error(error);
-        return responser.success(res, null, "CARD_E001");
+        return responser.success(res, null, "GLOBAL_E001");
     }
 }
 
@@ -52,10 +52,10 @@ async function getCardAnalytics(req, res){
         const { cardId } = req.query;
         const analytics = await depManager.ANALYTICS.getAnalyticsModel().findOne({cardId: cardId});
 
-        return responser.success(res, analytics, "CARD_S001");
+        return responser.success(res, analytics, "ANALYTICS_S002");
     }catch(error){
         console.log(error);
-        return responser.success(res, null, "CARD_E001");
+        return responser.success(res, null, "GLOBAL_E001");
     }
 }
 

@@ -5,6 +5,8 @@ const CARD = require("./card.json");
 const CONTACT = require("./contact.json");
 const USER = require("./user.json");
 const MAIN = require("./main.json");
+const ANALYTICS = require("./analytics.json");
+const CARDLOG = require("./card-log.json");
 
 module.exports = {
     AUTH,
@@ -12,5 +14,7 @@ module.exports = {
     CARD,
     CONTACT,
     USER,
-    MAIN
+    MAIN,
+    CARDLOG,
+    ANALYTICS
 };
