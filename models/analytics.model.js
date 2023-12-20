@@ -33,7 +33,7 @@ const _analyticsSchema = new Schema({
 })
 
 const getAnalyticsModel = () => {
-    return mongoose.model("CardAnalytics", _analyticsSchema, "CardAnalytics");
+    return mongoose.model("Analytics", _analyticsSchema, "Analytics");
 };
 
 module.exports = {
