@@ -16,7 +16,7 @@ app.get('/app/p/:cardId', (req, res)=>{
     const { cardId } = req.params;
 
     const imageUrl = `https://bizcard-dev-v1.s3.amazonaws.com/${cardId}/previewImage.jpg`;
-    const redirectUrl = `${process.env.DOMAIN}/app/p/${cardId}`;
+    const redirectUrl = `${process.env.DOMAIN}/app/p/card/${cardId}`;
 
     const metadataHtml = `
         <html>
