@@ -47,65 +47,72 @@ async function getUserAnalytics(req, res) {
     }
 }
 
+async function getCardAnalytics(req, res) {
+  try {
+      const { cardId } = req.query;
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
 
-async function getCardAnalytics(req, res){
-    try{
-        const { cardId } = req.query;
-        let analytics = await depManager.ANALYTICS.getAnalyticsModel().findOne({cardId: cardId});
+      const [analyticsData, weekLogViews, weekLogSave] = await Promise.all([
+          depManager.ANALYTICS.getAnalyticsModel().findOne({ cardId }),
+          getCardLogAggregate(cardId, 'view', weekAgo),
+          getCardLogAggregate(cardId, 'save', weekAgo)
+      ]);
 
-        analytics = analytics.toJSON();
+      const analytics = {
+          ...analyticsData.toJSON(),
+          weekLogViews,
+          weekLogSave
+      };
 
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
+      return responser.success(res, analytics, "ANALYTICS_S002");
+  } catch (error) {
+      console.log(error);
+      return responser.success(res, null, "GLOBAL_E001");
+  }
+}
 
-        const weekLogViews = await depManager.CARD_LOG.getCardLogModel().aggregate([
-            {
-              $match: {
-                cardId: new ObjectId(cardId),
-                'action.type': 'view',
-                created: { $gte: weekAgo }
-              }
-            },
-            {
-              $group: {
-                _id: {
+async function getCardLogAggregate(cardId, actionType, fromDate) {
+  return depManager.CARD_LOG.getCardLogModel().aggregate([
+      {
+          $match: {
+              cardId: new ObjectId(cardId),
+              'action.type': actionType,
+              created: { $gte: fromDate }
+          }
+      },
+      {
+          $group: {
+              _id: {
                   year: { $year: '$created' },
                   month: { $month: '$created' },
                   day: { $dayOfMonth: '$created' }
-                },
-                count: { $sum: 1 }
-              }
-            },
-            {
-              $project: {
-                _id: 0,
-                date: {
+              },
+              count: { $sum: 1 }
+          }
+      },
+      {
+          $project: {
+              _id: 0,
+              date: {
                   $dateToString: {
-                    format: '%Y-%m-%d',
-                    date: {
-                      $dateFromParts: {
-                        year: '$_id.year',
-                        month: '$_id.month',
-                        day: '$_id.day'
+                      format: '%Y-%m-%d',
+                      date: {
+                          $dateFromParts: {
+                              year: '$_id.year',
+                              month: '$_id.month',
+                              day: '$_id.day'
+                          }
                       }
-                    }
                   }
-                },
-                count: 1
-              }
-            },
-            {
-              $sort: { date: 1 }
-            }
-          ]);
-
-        analytics.weekLogViews = weekLogViews;
-
-        return responser.success(res, analytics, "ANALYTICS_S002");
-    }catch(error){
-        console.log(error);
-        return responser.success(res, null, "GLOBAL_E001");
-    }
+              },
+              count: 1
+          }
+      },
+      {
+          $sort: { date: 1 }
+      }
+  ]);
 }
 
 module.exports = {
