@@ -24,7 +24,7 @@ async function generateSignature(req, res) {
             </div>
         `;
 
-        return responser.success(res, signature, "CARD_S001");
+        return responser.success(res, signature, "SIGNATURE_S001");
     } catch (error) {
         console.error(error);
         return responser.success(res, null, "GLOBAL_E001");
