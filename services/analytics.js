@@ -1,5 +1,6 @@
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
+const {ObjectId} = require('mongodb');
 
 async function getUserAnalytics(req, res) {
     try {
@@ -50,7 +51,55 @@ async function getUserAnalytics(req, res) {
 async function getCardAnalytics(req, res){
     try{
         const { cardId } = req.query;
-        const analytics = await depManager.ANALYTICS.getAnalyticsModel().findOne({cardId: cardId});
+        let analytics = await depManager.ANALYTICS.getAnalyticsModel().findOne({cardId: cardId});
+
+        analytics = analytics.toJSON();
+
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+
+        const weekLogViews = await depManager.CARD_LOG.getCardLogModel().aggregate([
+            {
+              $match: {
+                cardId: new ObjectId(cardId),
+                'action.type': 'view',
+                created: { $gte: weekAgo }
+              }
+            },
+            {
+              $group: {
+                _id: {
+                  year: { $year: '$created' },
+                  month: { $month: '$created' },
+                  day: { $dayOfMonth: '$created' }
+                },
+                count: { $sum: 1 }
+              }
+            },
+            {
+              $project: {
+                _id: 0,
+                date: {
+                  $dateToString: {
+                    format: '%Y-%m-%d',
+                    date: {
+                      $dateFromParts: {
+                        year: '$_id.year',
+                        month: '$_id.month',
+                        day: '$_id.day'
+                      }
+                    }
+                  }
+                },
+                count: 1
+              }
+            },
+            {
+              $sort: { date: 1 }
+            }
+          ]);
+
+        analytics.weekLogViews = weekLogViews;
 
         return responser.success(res, analytics, "ANALYTICS_S002");
     }catch(error){

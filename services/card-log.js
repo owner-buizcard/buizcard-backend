@@ -15,47 +15,48 @@ async function addCardLog(req, res) {
 
         const analytics = await depManager.ANALYTICS.getAnalyticsModel().findOne({ cardId: cardId });
 
-        if (type !== "view") {
-            switch (type) {
-                case "unique-visit":
-                    analytics.viewCount += 1;
-                    analytics.uniqueVisitCount += 1;
-                    prompt = `${user} viewed your card`;
-                    break;
-                case "webclick":
-                    analytics.webClickCount += 1;
-                    prompt = `${user} opened your web link`;
-                    break;
-                case "save":
-                    analytics.savedCount += 1;
-                    prompt = `${user} saved your card`;
-                    break;
-                case "share":
-                    analytics.sharedCount += 1;
-                    prompt = `${user} shared your card`;
-                    break;
-                case "connect":
-                    analytics.connectedCount += 1;
-                    prompt = `${user} connected your card`;
-                    break;
-            }
-
-            const data = {
-                cardId,
-                by,
-                action: {
-                    type,
-                    prompt,
-                },
-                created: Date.now()
-            };
-
-            await depManager.CARD_LOG.getCardLogModel().create(data);
-        } else {
-            analytics.viewCount += 1;
+        switch (type) {
+            case "view":
+                analytics.viewCount += 1;
+                prompt = `${user} viewed your card`;
+                break;
+            case "unique-visit":
+                analytics.viewCount += 1;
+                analytics.uniqueVisitCount += 1;
+                prompt = `${user} viewed your card`;
+                break;
+            case "webclick":
+                analytics.webClickCount += 1;
+                prompt = `${user} opened your web link`;
+                break;
+            case "save":
+                analytics.savedCount += 1;
+                prompt = `${user} saved your card`;
+                break;
+            case "share":
+                analytics.sharedCount += 1;
+                prompt = `${user} shared your card`;
+                break;
+            case "connect":
+                analytics.connectedCount += 1;
+                prompt = `${user} connected your card`;
+                break;
         }
 
-        await analytics.save();
+        const data = {
+            cardId,
+            by,
+            action: {
+                type,
+                prompt,
+            },
+            created: Date.now()
+        };
+
+        await Promise.all([
+            depManager.CARD_LOG.getCardLogModel().create(data),
+            analytics.save()
+        ])
 
         return responser.success(res, true, "CARDLOG_S001");
     } catch (error) {
