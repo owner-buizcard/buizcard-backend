@@ -186,5 +186,12 @@ functions:
           path: /card-log
           method: POST
           cors: true
+  signature:
+    handler: ./handlers/signature.handler
+    events:
+      - http:
+          path: /email-signature
+          method: POST
+          cors: true
 
 

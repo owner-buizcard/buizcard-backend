@@ -78,6 +78,20 @@ module.exports.uploadObjectToS3Bucket = async (objectName, mimeType, objectData)
   return url;
 };
 
+module.exports.generateQrImage = async (cardId) => {
+  const qr = require('qrcode');
+  const Jimp = require('jimp');
+
+  const qrData = `${process.env.ORIGIN}/app/p/card/${cardId}`;
+  const qrDataURL = await qr.toDataURL(qrData, { margin: 1 });
+  const qrImage = await Jimp.read(Buffer.from(qrDataURL.split(',')[1], 'base64'));
+
+  const buffer = await qrImage.getBufferAsync(Jimp.MIME_JPEG);
+
+  const _fileUrl = await this.uploadObjectToS3Bucket(`${cardId}/qr-code.jpg`, 'image/jpeg', buffer);
+  const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
+  return file_url;
+}
 
 
 module.exports.generatePreviewImage = async (card) => {
@@ -87,7 +101,7 @@ module.exports.generatePreviewImage = async (card) => {
   const backgroundImagePath ='https://firebasestorage.googleapis.com/v0/b/bizcard-web.appspot.com/o/preview%2Fbackground.png?alt=media&token=214f70c1-4f00-46bb-a4a9-9bf93b3a8666';
   const appLogoPath = 'https://firebasestorage.googleapis.com/v0/b/bizcard-spiderlingz.appspot.com/o/logo%2Fcard.png?alt=media&token=ded33d94-1fb7-4538-9bd4-e307d8bd778a';
 
-  const qrData = `${process.env.ORIGIN}/app/p?cardId=${card._id}`;
+  const qrData = `${process.env.ORIGIN}/app/p/card/${card._id}`;
   const qrDataURL = await qr.toDataURL(qrData, { margin: 1 });
 
   // Make images readable
