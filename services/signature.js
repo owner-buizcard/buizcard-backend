@@ -13,6 +13,7 @@ async function generateSignature(req, res) {
             qrImageUrl = await generateQrImage(cardId);
         }
 
+        const rootPath = process.cwd();
         const templatePath = path.join(rootPath,'templates', 'email_signature_template.html');
         const htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
 
