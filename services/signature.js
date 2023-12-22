@@ -1,5 +1,6 @@
 const path = require("path");
 const responser = require("../core/responser");
+const fs = require('fs');
 const { generateQrImage } = require("../core/utils");
 
 async function generateSignature(req, res) {
