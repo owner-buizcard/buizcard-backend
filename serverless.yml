@@ -107,6 +107,10 @@ functions:
           path: /me
           method: PUT
           cors: true
+      - http:
+          path: /me
+          method: DELETE
+          cors: true
   card:
     handler: ./handlers/card.handler
     events:

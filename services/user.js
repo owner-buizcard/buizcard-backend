@@ -1,6 +1,17 @@
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
 
+async function deleteAccount(req, res){
+    try{
+        const userId = req.userId;
+        await depManager.USER.getUserModel().deleteOne({_id: userId});
+
+        return responser.success(res, true, "USER_S002");
+    }catch(error){
+        return responser.success(res, null, "USER_E001");
+    }
+}
+
 async function update(req, res){
     try{
 
@@ -49,5 +60,6 @@ async function update(req, res){
 }
 
 module.exports = {
-    update
+    update,
+    deleteAccount
 }

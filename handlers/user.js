@@ -18,6 +18,7 @@ app.use(cors_origin());
 app.use(validateAccessToken);
 
 app.put("/me", processHandler(service.update));
+app.delete("/me", processHandler(service.deleteAccount));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false
