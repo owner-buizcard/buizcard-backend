@@ -25,7 +25,7 @@ async function generateSignature(req, res) {
             .replace('[phoneNumber]', phoneNumber)
             .replace('[location]', location)
             .replace('[disclaimer]', disclaimer)
-            .replace('[qrImageUrl]', qrImageUrl);
+            .replace('[qrImage]', qrImageUrl ? `<img src="${qrImageUrl}" alt="QR Code">` : '');
 
         return responser.success(res, `${signature}`, "SIGNATURE_S001");
     } catch (error) {
