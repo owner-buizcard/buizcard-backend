@@ -35,6 +35,8 @@ app.post("/vb", processHandler(service.uploadVirtualBG));
 const { validateAccessToken } = require('../middlewares/authenticate');
 app.use(validateAccessToken);
 
+app.get("/vb", processHandler(service.getVirtualBgs));
+
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false
 });

@@ -8,6 +8,7 @@ const MAIN = require("./main.json");
 const ANALYTICS = require("./analytics.json");
 const CARDLOG = require("./card-log.json");
 const SIGNATURE = require("./signature.json");
+const VBG = require("./virtual-background.json");
 
 module.exports = {
     AUTH,
@@ -18,5 +19,6 @@ module.exports = {
     MAIN,
     CARDLOG,
     ANALYTICS,
-    SIGNATURE
+    SIGNATURE,
+    VBG
 };

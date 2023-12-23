@@ -28,7 +28,33 @@ async function uploadVirtualBG(req, res) {
     }
 }
 
+async function getVirtualBgs(req, res) {
+    try {
+
+        const vbs = await depManager.VIRTUAL_BACKGROUND.getVirtualBackgroundModel().find();
+
+        const groupedData = vbs.reduce((result, item) => {
+            const category = item.category;
+            const existingCategory = result.find(group => group.category === category);
+          
+            if (existingCategory) {
+              existingCategory.items.push(item);
+            } else {
+              result.push({ category, items: [item] });
+            }
+          
+            return result;
+        }, []);
+
+        return responser.success(res, groupedData, "VBG_S001");
+    } catch (error) {
+        console.error(error);
+        return responser.success(res, null, "GLOBAL_E001");
+    }
+}
+
 
 module.exports = {
-    uploadVirtualBG
+    uploadVirtualBG,
+    getVirtualBgs
 }
