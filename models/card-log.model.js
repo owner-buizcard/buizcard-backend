@@ -13,7 +13,7 @@ const _cardLogSchema = new Schema({
     action: {
         type: {
             type: String,
-            enum: ['unique-visit', 'webclick', 'save', 'share', 'connect'],
+            enum: ['unique-visit', 'webclick', 'save', 'share', 'connect', 'view'],
             required: true
         },
         prompt: {
