@@ -204,5 +204,9 @@ functions:
           path: /vb
           method: POST
           cors: true
+      - http:
+          path: /vb
+          method: GET
+          cors: true
 
 
