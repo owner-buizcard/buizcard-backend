@@ -30,20 +30,26 @@ async function uploadVirtualBG(req, res) {
 
 async function getVirtualBgs(req, res) {
     try {
+
         const vbs = await depManager.VIRTUAL_BACKGROUND.getVirtualBackgroundModel().find();
 
-        const groupedData = await Promise.all(vbs.map(async (item) => {
+        const groupedData = vbs.reduce((result, item) => {
             const category = item.category;
-            const existingCategory = groupedData.find(group => group.category === category);
-
+            const existingCategory = result.find(group => group.category === category);
+          
             if (existingCategory) {
-                existingCategory.items.push({ _id: item._id, normal: item.normal });
+              existingCategory.items.push(item);
             } else {
-                return { category, items: [{ _id: item._id, normal: item.normal }] };
+              result.push({ category, items: [item] });
             }
-        }));
+          
+            return result;
+        }, []);
 
-        const extractedData = groupedData.filter(Boolean);
+        const extractedData = groupedData.map(categoryData => ({
+            category: categoryData.category,
+            items: categoryData.items.map(item => ({ _id: item._id, normal: item.normal }))
+        }));
 
         return responser.success(res, extractedData, "VBG_S001");
     } catch (error) {
@@ -51,7 +57,6 @@ async function getVirtualBgs(req, res) {
         return responser.success(res, null, "GLOBAL_E001");
     }
 }
-
 
 
 module.exports = {
