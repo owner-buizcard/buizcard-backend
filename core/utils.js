@@ -130,8 +130,8 @@ module.exports.generateVbImage = async (card, bgImage) => {
 
   const textPrints = [
     printText('Bizcard', fonts.bold, backgroundImage.bitmap.width - 80, backgroundImage.bitmap.height - 40),
-    printText(`${card.name?.firstName} ${card.name?.lastName}`, fonts.name, 30, 90),
-    printText(`${card.company?.title}`, fonts.sub, 30, 140),
+    printText(`${card.name?.firstName} ${card.name?.lastName}`, fonts.name, 105, 90),
+    printText(`${card.company?.title}`, fonts.sub, 105, 200),
   ];
 
   await Promise.all(textPrints);
