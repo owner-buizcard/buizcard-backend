@@ -58,6 +58,24 @@ async function getVirtualBgs(req, res) {
     }
 }
 
+async function createVirtualBg(req, res) {
+    try {
+        const { cardId, backgroundId } = req.body;
+        
+        const [cardData, background] = await Promise.all([
+            depManager.CARD.getCardModel().findById(cardId),
+            depManager.VIRTUAL_BACKGROUND.getVirtualBackgroundModel().findById(backgroundId)
+        ]) ;
+
+        const imageUrl = background.large;
+
+        return responser.success(res, imageUrl, "VBG_S002");
+    } catch (error) {
+        console.error(error);
+        return responser.success(res, null, "GLOBAL_E001");
+    }
+}
+
 
 module.exports = {
     uploadVirtualBG,

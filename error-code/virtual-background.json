@@ -1,5 +1,6 @@
 {
     "en": {
-        "S001": "Backgrounds fetched successfully!"
+        "S001": "Backgrounds fetched successfully!",
+        "S002": "Background created successfully!"
     }
 }
