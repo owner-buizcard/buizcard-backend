@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(open_origin());
 
-app.get('/app/p/:cardId', (req, res)=>{
+app.get('/app/p/card/:cardId', (req, res)=>{
 
     const { cardId } = req.params;
 
