@@ -30,12 +30,13 @@ app.use(fileUpload({
     debug: true,
 }));
 
-app.post("/vb", processHandler(service.uploadVirtualBG));
+app.post("/vb-new", processHandler(service.uploadVirtualBG));
 
 const { validateAccessToken } = require('../middlewares/authenticate');
 app.use(validateAccessToken);
 
 app.get("/vb", processHandler(service.getVirtualBgs));
+app.post("/vb", processHandler(service.createVirtualBg));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false

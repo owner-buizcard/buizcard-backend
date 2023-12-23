@@ -79,5 +79,6 @@ async function createVirtualBg(req, res) {
 
 module.exports = {
     uploadVirtualBG,
+    createVirtualBg,
     getVirtualBgs
 }

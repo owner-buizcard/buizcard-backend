@@ -201,6 +201,10 @@ functions:
     handler: ./handlers/virtual-background.handler
     events:
       - http:
+          path: /vb-new
+          method: POST
+          cors: true
+      - http:
           path: /vb
           method: POST
           cors: true
