@@ -189,6 +189,7 @@ module.exports.resizedImage = async (input) => {
   const Jimp = require('jimp');
   try {
       const image = await Jimp.read(input);
+      image.resize(300, 200);
       const imageBuffer = await image.getBufferAsync(Jimp.MIME_JPEG); 
       return imageBuffer;
   } catch (error) {
