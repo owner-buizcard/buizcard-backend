@@ -105,12 +105,15 @@ module.exports.generateVbImage=async(card, bgImage)=>{
     Jimp.read(Buffer.from(qrDataURL.split(',')[1], 'base64')),
   ]);
 
+
+  qrImage.resize(image.bitmap.height * 2.4, image.bitmap.height * 2.4);
+
   const xPosition = image.bitmap.width - qrImage.bitmap.width - 35;
   const yPosition = 105;
 
   image.composite(qrImage, xPosition, yPosition);
 
-  const boldFont = await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
+  const boldFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
   const textColor = 0xFF0000; 
   image.print(
     boldFont,
@@ -126,11 +129,11 @@ module.exports.generateVbImage=async(card, bgImage)=>{
   );
 
   if(card.name?.firstName && card.name?.lastName){
-    const nameFont = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+    const nameFont = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
     image.print(
       nameFont,
       30, 
-      image.bitmap.height-90, 
+      90, 
       {
         text: `${card.name?.firstName} ${card.name?.lastName}`,
         alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
@@ -142,11 +145,11 @@ module.exports.generateVbImage=async(card, bgImage)=>{
   }
 
   if(card.company?.title){
-    const subFont = await Jimp.loadFont(Jimp.FONT_SANS_16_BLACK);
+    const subFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
     image.print(
       subFont,
       30, 
-      image.bitmap.height-50, 
+      50, 
       {
         text: `${card.company?.title}`,
         alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
