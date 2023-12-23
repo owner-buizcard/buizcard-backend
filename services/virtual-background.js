@@ -10,7 +10,7 @@ async function uploadVirtualBG(req, res) {
 
         const imageUrl = await uploadFile(`${folder}/`, image);
         const resized = await resizedImage(imageUrl);
-        const _fileUrl = await uploadObjectToS3Bucket(`${folder}/${makeid(30)}`, 'image/jpeg', resized);
+        const _fileUrl = await uploadObjectToS3Bucket(`${folder}/${makeid(30)}.jpg`, 'image/jpeg', resized);
         const smallImageUrl = _fileUrl.substring(0, _fileUrl.indexOf('?'));
 
         const data = {
