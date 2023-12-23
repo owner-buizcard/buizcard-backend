@@ -1,6 +1,6 @@
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
-const { uploadFile, resizedImage, makeid, uploadObjectToS3Bucket } = require("../core/utils");
+const { uploadFile, resizedImage, makeid, uploadObjectToS3Bucket, generateVbImage } = require("../core/utils");
 
 async function uploadVirtualBG(req, res) {
     try {
@@ -65,9 +65,9 @@ async function createVirtualBg(req, res) {
         const [cardData, background] = await Promise.all([
             depManager.CARD.getCardModel().findById(cardId),
             depManager.VIRTUAL_BACKGROUND.getVirtualBackgroundModel().findById(backgroundId)
-        ]) ;
-
-        const imageUrl = background.large;
+        ]);
+        
+        const imageUrl = await generateVbImage(cardData, background.large);
 
         return responser.success(res, imageUrl, "VBG_S002");
     } catch (error) {
