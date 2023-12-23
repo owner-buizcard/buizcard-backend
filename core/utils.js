@@ -185,6 +185,18 @@ module.exports.generatePreviewImage = async (card) => {
 };
 
 
+module.exports.resizedImage = async (input) => {
+  const Jimp = require('jimp');
+  try {
+      const image = await Jimp.read(input);
+      const imageBuffer = await image.getBufferAsync(Jimp.MIME_JPEG); 
+      return imageBuffer;
+  } catch (error) {
+      console.error('Error resizing image:', error);
+      throw new Error('Failed to resize image');
+  }
+}
+
 
 
 module.exports.sendEmail=async(toEmail, subject, renderedTemplate)=>{

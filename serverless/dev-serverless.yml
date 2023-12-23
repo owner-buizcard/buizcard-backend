@@ -197,5 +197,12 @@ functions:
           path: /email-signature
           method: POST
           cors: true
+  virtual-background:
+    handler: ./handlers/virtual-background.handler
+    events:
+      - http:
+          path: /vb
+          method: POST
+          cors: true
 
 
