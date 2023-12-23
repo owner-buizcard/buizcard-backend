@@ -106,7 +106,7 @@ module.exports.generateVbImage=async(card, bgImage)=>{
   ]);
 
 
-  qrImage.resize(image.bitmap.height * 2.4, image.bitmap.height * 2.4);
+  qrImage.resize(qrImage.bitmap.height*2.4, qrImage.bitmap.height*2.4);
 
   const xPosition = image.bitmap.width - qrImage.bitmap.width - 35;
   const yPosition = 105;
@@ -149,7 +149,7 @@ module.exports.generateVbImage=async(card, bgImage)=>{
     image.print(
       subFont,
       30, 
-      50, 
+      120, 
       {
         text: `${card.company?.title}`,
         alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
