@@ -93,78 +93,68 @@ module.exports.generateQrImage = async (cardId) => {
   return file_url;
 }
 
-module.exports.generateVbImage=async(card, bgImage)=>{
+module.exports.generateVbImage = async (card, bgImage) => {
   const qr = require('qrcode');
   const Jimp = require('jimp');
 
   const qrData = `${process.env.ORIGIN}/app/p/card/${card._id}`;
   const qrDataURL = await qr.toDataURL(qrData, { margin: 1 });
 
-  const [image, qrImage] = await Promise.all([
+  const [qrImageBuffer, backgroundImage, fonts] = await Promise.all([
+    Buffer.from(qrDataURL.split(',')[1], 'base64'),
     Jimp.read(bgImage),
-    Jimp.read(Buffer.from(qrDataURL.split(',')[1], 'base64')),
+    loadFonts(),
   ]);
 
+  const qrImage = await Jimp.read(qrImageBuffer);
+  qrImage.resize(qrImage.bitmap.height * 2.4, qrImage.bitmap.height * 2.4);
 
-  qrImage.resize(qrImage.bitmap.height*2.4, qrImage.bitmap.height*2.4);
+  const textColor = 0xFF0000;
 
-  const xPosition = image.bitmap.width - qrImage.bitmap.width - 35;
+  const printText = async (text, font, x, y) => {
+    if (text) {
+      backgroundImage.print(
+        font,
+        x,
+        y,
+        {
+          text,
+          alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
+          alignmentY: Jimp.VERTICAL_ALIGN_TOP,
+          rgba: textColor,
+        },
+        backgroundImage.bitmap.width - 20
+      );
+    }
+  };
+
+  const textPrints = [
+    printText('Bizcard', fonts.bold, backgroundImage.bitmap.width - 80, backgroundImage.bitmap.height - 40),
+    printText(`${card.name?.firstName} ${card.name?.lastName}`, fonts.name, 30, 90),
+    printText(`${card.company?.title}`, fonts.sub, 30, 140),
+  ];
+
+  await Promise.all(textPrints);
+
+  const xPosition = backgroundImage.bitmap.width - qrImage.bitmap.width - 105;
   const yPosition = 105;
 
-  image.composite(qrImage, xPosition, yPosition);
+  backgroundImage.composite(qrImage, xPosition, yPosition);
 
-  const boldFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-  const textColor = 0xFF0000; 
-  image.print(
-    boldFont,
-    image.bitmap.width-80, 
-    image.bitmap.height-40, 
-    {
-      text: 'Bizcard',
-      alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
-      alignmentY: Jimp.VERTICAL_ALIGN_TOP,
-      rgba: textColor, 
-    },
-    image.bitmap.width - 20 // maximum width
-  );
-
-  if(card.name?.firstName && card.name?.lastName){
-    const nameFont = await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
-    image.print(
-      nameFont,
-      30, 
-      90, 
-      {
-        text: `${card.name?.firstName} ${card.name?.lastName}`,
-        alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
-        alignmentY: Jimp.VERTICAL_ALIGN_TOP,
-        rgba: textColor, 
-      },
-      image.bitmap.width - 20 // maximum width
-    );
-  }
-
-  if(card.company?.title){
-    const subFont = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-    image.print(
-      subFont,
-      30, 
-      120, 
-      {
-        text: `${card.company?.title}`,
-        alignmentX: Jimp.HORIZONTAL_ALIGN_LEFT,
-        alignmentY: Jimp.VERTICAL_ALIGN_TOP,
-        rgba: textColor, 
-      },
-      image.bitmap.width - 20 // maximum width
-    );
-  }
-
-  const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
-
+  const buffer = await backgroundImage.getBufferAsync(Jimp.MIME_JPEG);
   const _fileUrl = await this.uploadObjectToS3Bucket(`${card._id}/bizcard-virtual-background.jpg`, 'image/jpeg', buffer);
   const file_url = _fileUrl.substring(0, _fileUrl.indexOf('?'));
   return file_url;
+};
+
+async function loadFonts() {
+  const [bold, name, sub] = await Promise.all([
+    Jimp.loadFont(Jimp.FONT_SANS_32_WHITE),
+    Jimp.loadFont(Jimp.FONT_SANS_128_WHITE),
+    Jimp.loadFont(Jimp.FONT_SANS_64_WHITE),
+  ]);
+
+  return { bold, name, sub };
 }
 
 
