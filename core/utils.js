@@ -103,7 +103,7 @@ module.exports.generateVbImage = async (card, bgImage) => {
   const [qrImageBuffer, backgroundImage, fonts] = await Promise.all([
     Buffer.from(qrDataURL.split(',')[1], 'base64'),
     Jimp.read(bgImage),
-    loadFonts(),
+    loadFonts(Jimp),
   ]);
 
   const qrImage = await Jimp.read(qrImageBuffer);
@@ -147,11 +147,11 @@ module.exports.generateVbImage = async (card, bgImage) => {
   return file_url;
 };
 
-async function loadFonts() {
+async function loadFonts(jimp) {
   const [bold, name, sub] = await Promise.all([
-    Jimp.loadFont(Jimp.FONT_SANS_32_WHITE),
-    Jimp.loadFont(Jimp.FONT_SANS_128_WHITE),
-    Jimp.loadFont(Jimp.FONT_SANS_64_WHITE),
+    jimp.loadFont(jimp.FONT_SANS_32_WHITE),
+    jimp.loadFont(jimp.FONT_SANS_128_WHITE),
+    jimp.loadFont(jimp.FONT_SANS_64_WHITE),
   ]);
 
   return { bold, name, sub };
