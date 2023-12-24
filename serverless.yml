@@ -150,6 +150,10 @@ functions:
           method: POST
           cors: true
       - http:
+          path: /contact-request
+          method: POST
+          cors: true
+      - http:
           path: /contact
           method: GET
           cors: true

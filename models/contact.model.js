@@ -10,6 +10,10 @@ const _contactSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     },
+    type: {
+        type: String,
+        default: "Bizcard"
+    },
     status: {
         type: String,
         default: "active"
@@ -17,6 +21,10 @@ const _contactSchema = new Schema({
     connectedAt: { 
         type: Date, 
         default: Date.now 
+    },
+    connectedBy: { 
+        type: Schema.Types.ObjectId,
+        default: null
     }
 })
 

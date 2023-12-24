@@ -18,6 +18,7 @@ app.use(cors_origin());
 app.use(validateAccessToken);
 
 app.post("/contact", processHandler(service.create));
+app.post("/contact-request", processHandler(service.createRequest));
 app.get("/contact", processHandler(service.get));
 app.get("/user-contacts", processHandler(service.getUserContacts));
 app.delete("/contact", processHandler(service.deleteContact));

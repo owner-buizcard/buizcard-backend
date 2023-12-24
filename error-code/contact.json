@@ -1,5 +1,10 @@
 {
     "en": {
-        
+        "S001": "Contact created successfully!",
+        "S002": "Contact request created successfully!",
+        "S003": "Contacts fetched successfully!",
+        "S004": "Contact fetched successfully!",
+        "S005": "Contact deleted successfully!",
+        "E001": "Contact already connected!"
     }
 }
