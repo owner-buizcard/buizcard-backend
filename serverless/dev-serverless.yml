@@ -154,6 +154,10 @@ functions:
           method: POST
           cors: true
       - http:
+          path: /contact-form
+          method: POST
+          cors: true
+      - http:
           path: /contact
           method: GET
           cors: true

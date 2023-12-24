@@ -8,7 +8,11 @@ const _contactSchema = new Schema({
     },
     cardId: {
         type: Schema.Types.ObjectId,
-        required: true
+        default: null
+    },
+    details: {
+        type: Object,
+        default: null
     },
     type: {
         type: String,

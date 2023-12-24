@@ -18,6 +18,28 @@ async function create(req, res) {
     }
 }
 
+async function connectForm(req, res) {
+    try {
+        const { name, email, phone, title, company, message, userId } = req.body;
+        const details = { name, email, phone, title, company, message };
+
+        const existing = await depManager.CONTACT.getContactModel().findOne();
+        if (existing) return responser.success(res, null, "CONTACT_E001");
+
+        const contact = await depManager.CONTACT.getContactModel().create({ 
+            userId, 
+            details, 
+            type: "Message", 
+            status: "request",
+            connectedAt: Date.now()
+        });
+
+        return responser.success(res, contact, "CONTACT_S006");
+    } catch (error) {
+        return responser.error(res, "Error creating contacts", "CONTACT_E001");
+    }
+}
+
 async function createRequest(req, res) {
     try {
         const { cardId, type, connectedBy, userId } = req.body;
@@ -97,6 +119,7 @@ async function deleteContact(req, res){
 module.exports = {
     create,
     createRequest,
+    connectForm,
     get,
     getUserContacts,
     deleteContact

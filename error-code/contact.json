@@ -5,6 +5,7 @@
         "S003": "Contacts fetched successfully!",
         "S004": "Contact fetched successfully!",
         "S005": "Contact deleted successfully!",
+        "S006": "Contact form sent successfully!",
         "E001": "Contact already connected!"
     }
 }

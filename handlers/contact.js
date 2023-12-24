@@ -19,6 +19,7 @@ app.use(validateAccessToken);
 
 app.post("/contact", processHandler(service.create));
 app.post("/contact-request", processHandler(service.createRequest));
+app.post("/contact-form", processHandler(service.connectForm));
 app.get("/contact", processHandler(service.get));
 app.get("/user-contacts", processHandler(service.getUserContacts));
 app.delete("/contact", processHandler(service.deleteContact));
