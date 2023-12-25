@@ -23,9 +23,6 @@ async function connectForm(req, res) {
         const { name, email, phone, title, company, message, userId } = req.body;
         const details = { name, email, phone, title, company, message };
 
-        const existing = await depManager.CONTACT.getContactModel().findOne();
-        if (existing) return responser.success(res, null, "CONTACT_E001");
-
         const contact = await depManager.CONTACT.getContactModel().create({ 
             userId, 
             details, 
