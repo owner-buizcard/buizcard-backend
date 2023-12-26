@@ -22,6 +22,10 @@ const _contactSchema = new Schema({
         type: String,
         default: "active"
     },
+    tags: {
+        type: Object,
+        default: []
+    },
     connectedAt: { 
         type: Date, 
         default: Date.now 
