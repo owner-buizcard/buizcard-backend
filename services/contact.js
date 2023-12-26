@@ -20,12 +20,13 @@ async function create(req, res) {
 
 async function connectForm(req, res) {
     try {
-        const { name, email, phone, title, company, message, userId } = req.body;
+        const { name, email, phone, title, company, message, userId, connectedBy } = req.body;
         const details = { name, email, phone, title, company, message };
 
         const contact = await depManager.CONTACT.getContactModel().create({ 
             userId, 
             details, 
+            connectedBy,
             type: "Message", 
             status: "request",
             connectedAt: Date.now()
