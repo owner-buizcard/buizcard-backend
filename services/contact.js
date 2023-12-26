@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
 
@@ -98,6 +99,7 @@ async function getUserContacts(req, res){
         
         return responser.success(res, contacts, "CONTACT_S003");
     }catch(error){
+        console.log(error);
         return responser.success(res, null, "GLOBAL_E001");
     }
 }
