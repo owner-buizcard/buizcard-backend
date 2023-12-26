@@ -106,9 +106,8 @@ async function getUserContacts(req, res){
 
 async function deleteContact(req, res){
     try{
-        const userId = req.userId;
         const contactId = req.query.contactId
-        await depManager.CONTACT.getContactModel().deleteOne({userId: userId, contactId: contactId});
+        await depManager.CONTACT.getContactModel().deleteOne({_id: contactId});
 
         return responser.success(res, true, "CONTACT_S005");
     }catch(error){
