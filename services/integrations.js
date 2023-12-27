@@ -3,6 +3,48 @@ const { default: axios } = require('axios');
 const responser = require("../core/responser");
 const depManager = require('../core/depManager');
 
+async function connectHubspotCrm(req, res){
+    try{
+        const { userId } = req;
+        const { code } = req.body;
+        const tokenUrl = 'https://api.hubapi.com/oauth/v1/token';
+        const tokenParams = {
+            grant_type: 'authorization_code',
+            client_id: process.env.HUBSPOT_CLIENT_ID,
+            client_secret: process.env.HUBSPOT_CLIENT_SECRET,
+            redirect_uri: process.env.HUBSPOT_CALL_BACK,
+            code: code,
+        };
+        const response = await axios.post(tokenUrl, tokenParams, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        });
+        const data = response.data;
+
+        const integration = {
+            userId,
+            integrationId: "hubspot_crm",
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token
+        }
+
+        const [created, user] = await Promise.all([
+            depManager.INTEGRATIONS.getIntegrationsModel().create(integration),
+            depManager.USER.getUserModel().findById(userId)
+        ]);
+
+        user.integrations.push("zoho_crm");
+
+        await user.save();
+
+        return responser.success(res, created, "INTEGRATION_S002");
+    }catch(error){
+        console.log(error);
+        return responser.error(res, null, "GLOBAL_E001");
+    }
+}
+
 async function connectZohoCrm(req, res){
     try{
         const { userId } = req;
@@ -48,5 +90,6 @@ async function connectZohoCrm(req, res){
 }
 
 module.exports = {
-    connectZohoCrm
+    connectZohoCrm,
+    connectHubspotCrm
 }

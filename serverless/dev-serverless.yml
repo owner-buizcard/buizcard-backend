@@ -21,6 +21,9 @@ provider:
     ZOHO_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):ZOHO_CLIENT_ID}
     ZOHO_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):ZOHO_CLIENT_SECRET}
     ZOHO_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):ZOHO_CALL_BACK}
+    HUBSPOT_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):HUBSPOT_CLIENT_ID}
+    HUBSPOT_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):HUBSPOT_CLIENT_SECRET}
+    HUBSPOT_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):HUBSPOT_CALL_BACK}
     LINKEDIN_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CLIENT_ID}
     LINKEDIN_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CLIENT_SECRET}
     LINKEDIN_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CALL_BACK}
@@ -232,6 +235,10 @@ functions:
     events:
       - http:
           path: /zoho/connect
+          method: POST
+          cors: true
+      - http:
+          path: /hubspot/connect
           method: POST
           cors: true
   export:

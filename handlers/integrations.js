@@ -15,6 +15,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors_origin());
 
+app.post("/hubspot/connect", processHandler(service.connectHubspotCrm));
+
 app.use(validateAccessToken);
 
 app.post("/zoho/connect", processHandler(service.connectZohoCrm));

@@ -1,5 +1,6 @@
 {
     "en": {
-        "S001": "Integration connected successfully!"
+        "S001": "Zoho CRM connected successfully!",
+        "S002": "Hubspot CRM connected successfully!"
     }
 }
