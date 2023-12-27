@@ -82,6 +82,10 @@ const _userSchema = new Schema({
         type: Number,
         default: 0
     },
+    integrations: {
+        type: Object,
+        default: []
+    },
     lastLogin: { type: Date, default: Date.now },
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now },

@@ -18,6 +18,9 @@ provider:
     GITHUB_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CLIENT_ID}
     GITHUB_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CLIENT_SECRET}
     GITHUB_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CALL_BACK}
+    ZOHO_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):ZOHO_CLIENT_ID}
+    ZOHO_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):ZOHO_CLIENT_SECRET}
+    ZOHO_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):ZOHO_CALL_BACK}
     LINKEDIN_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CLIENT_ID}
     LINKEDIN_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CLIENT_SECRET}
     LINKEDIN_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CALL_BACK}
@@ -222,6 +225,13 @@ functions:
           cors: true
       - http:
           path: /vb
+          method: GET
+          cors: true
+  integrations:
+    handler: ./handlers/integrations.handler
+    events:
+      - http:
+          path: /i/zoho/callback
           method: GET
           cors: true
 

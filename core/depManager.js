@@ -7,6 +7,7 @@ const BACKGROUND = require("../models/background.model");
 const CONFIG = require("../models/config.model");
 const CARD_LOG = require("../models/card-log.model");
 const VIRTUAL_BACKGROUND = require("../models/virtual-background.model");
+const INTEGRATIONS = require("../models/integrations.model");
 
 const depManager = {
   // DB
@@ -17,7 +18,8 @@ const depManager = {
   BACKGROUND,
   CONFIG,
   CARD_LOG,
-  VIRTUAL_BACKGROUND
+  VIRTUAL_BACKGROUND,
+  INTEGRATIONS
 };
 
 module.exports = depManager;
