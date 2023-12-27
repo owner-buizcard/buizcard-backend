@@ -18,6 +18,7 @@ app.use(cors_origin());
 app.use(validateAccessToken);
 
 app.post("/zoho/export", processHandler(service.zohoExport));
+app.post("/hubspot/export", processHandler(service.hubspotExport));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false

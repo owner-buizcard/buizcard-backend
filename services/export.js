@@ -1,6 +1,65 @@
 const { default: axios } = require("axios");
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
+const hubspot = require('@hubspot/api-client')
+
+// HUBSPOT
+
+async function hubspotExport(req, res) {
+    try {
+        const { userId } = req;
+        const { contacts } = req.body;
+
+        const hub = await depManager.INTEGRATIONS.getIntegrationsModel().findOne({ userId, integrationId: "hubspot_crm" });
+
+        await createContactsInHubspot(hub, contacts, userId);
+
+        responser.success(res, true, "EXPORT_S002");
+    } catch (error) {
+        handleError(error, res);
+    }
+}
+
+async function createContactsInHubspot(hub, contacts, userId) {
+
+    try {
+        await makeHubspotRequest(contacts, hub.accessToken);
+    } catch (error) {
+        if (error.code === 401) {
+            const accessToken = await getHubspotAccessToken(hub.refreshToken);
+            await Promise.all([
+                makeHubspotRequest(contacts, accessToken),
+                depManager.INTEGRATIONS.getIntegrationsModel().updateOne({userId, integrationId: "hubspot_crm"}, {accessToken})
+            ]);
+        }
+    }
+}
+
+async function makeHubspotRequest(contacts, accessToken) {
+    const hubspotClient = new hubspot.Client({ accessToken: accessToken })
+
+    const [response] = await Promise.all(contacts.map(async (contact) => {
+        const obj = { properties: contact };
+        return await hubspotClient.crm.contacts.basicApi.create(obj);
+    }));
+
+    return response;
+}
+
+async function getHubspotAccessToken(refreshToken) {
+    const tokenEndpoint = `https://api.hubapi.com/oauth/v1/token`;
+
+    const params = new URLSearchParams();
+    params.append("grant_type", "refresh_token");
+    params.append("client_id", process.env.HUBSPOT_CLIENT_ID);
+    params.append("client_secret", process.env.HUBSPOT_CLIENT_SECRET);
+    params.append("refresh_token", refreshToken);
+
+    const response = await axios.post(tokenEndpoint, params);
+    return response.data.access_token;
+}
+
+// ZOHO
 
 async function zohoExport(req, res) {
     try {
@@ -10,15 +69,15 @@ async function zohoExport(req, res) {
         const zoho = await depManager.INTEGRATIONS.getIntegrationsModel().findOne({ userId, integrationId: "zoho_crm" });
         const domain = zoho.server.split('.').filter(Boolean).pop();
 
-        await createContactsInZoho(zoho, domain, contacts);
+        await createContactsInZoho(zoho, domain, contacts, userId);
 
-        responser.success(res, true, "CONTACT_S001");
+        responser.success(res, true, "EXPORT_S001");
     } catch (error) {
         handleError(error, res);
     }
 }
 
-async function createContactsInZoho(zoho, domain, contacts) {
+async function createContactsInZoho(zoho, domain, contacts, userId) {
     const headers = {
         Authorization: `Zoho-oauthtoken ${zoho.accessToken}`,
         'Content-Type': 'application/json',
@@ -32,10 +91,13 @@ async function createContactsInZoho(zoho, domain, contacts) {
         }
     } catch (error) {
         if (error.response && error.response.status === 401 && error.response.data && error.response.data.code === "INVALID_TOKEN") {
-            const newAccessToken = await getZohoAccessToken(zoho.refreshToken, zoho.server);
-            headers.Authorization = `Zoho-oauthtoken ${newAccessToken}`;
-
-            const response = await makeZohoRequest(zoho, domain, "Leads", contacts, headers);
+            const accessToken = await getZohoAccessToken(zoho.refreshToken, zoho.server);
+            headers.Authorization = `Zoho-oauthtoken ${accessToken}`;
+            
+            const [ response ] = await Promise.all([
+                makeZohoRequest(zoho, domain, "Leads", contacts, headers),
+                depManager.INTEGRATIONS.getIntegrationsModel().updateOne({userId, integrationId: "zoho_crm"}, {accessToken})
+            ])
 
             if (response.status !== 201) {
                 throw new Error("Failed to create contacts in Zoho CRM");
@@ -67,10 +129,11 @@ async function getZohoAccessToken(refreshToken, server) {
 }
 
 function handleError(error, res) {
-    console.error(error);
-    responser.error(res, null, "CONTACT_E001");
+    console.log(error)
+    responser.error(res, null, "GLOBAL_E001");
 }
 
 module.exports = {
-    zohoExport
+    zohoExport,
+    hubspotExport
 };

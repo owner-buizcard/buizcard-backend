@@ -248,5 +248,8 @@ functions:
           path: /zoho/export
           method: POST
           cors: true
-
+      - http:
+          path: /hubspot/export
+          method: POST
+          cors: true
 
