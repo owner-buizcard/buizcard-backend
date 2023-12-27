@@ -22,14 +22,13 @@ async function connectZohoCrm(req, res){
         const response = await axios.post(tokenEndpoint, params);
         const data = response.data;
 
-        console.log(response)
-
         const integration = {
             userId,
             integrationId: "zoho_crm",
             accessToken: data.access_token,
             refreshToken: data.refresh_token,
-            scope: data.scope
+            scope: data.scope,
+            server: serverUrl
         }
 
         const [created, user] = await Promise.all([

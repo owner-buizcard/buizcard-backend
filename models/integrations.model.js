@@ -21,6 +21,10 @@ const _integrationssSchema = new Schema({
     scope: {
         type: String,
         default: null
+    },
+    server: {
+        type: String,
+        default: null
     }
 })
 

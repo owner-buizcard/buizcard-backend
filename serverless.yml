@@ -234,6 +234,13 @@ functions:
           path: /zoho/connect
           method: POST
           cors: true
+  export:
+    handler: ./handlers/export.handler
+    events:
+      - http:
+          path: /zoho/export
+          method: POST
+          cors: true
 
 
 
