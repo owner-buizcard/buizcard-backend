@@ -17,7 +17,7 @@ app.use(cors_origin());
 
 app.use(validateAccessToken);
 
-app.get("/i/zoho/callback", processHandler(service.zohoCrmAuth));
+app.post("/zoho/connect", processHandler(service.connectZohoCrm));
 
 
 module.exports.handler = serverless(app, {

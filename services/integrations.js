@@ -3,12 +3,14 @@ const { default: axios } = require('axios');
 const responser = require("../core/responser");
 const depManager = require('../core/depManager');
 
-async function zohoCrmAuth(req, res){
+async function connectZohoCrm(req, res){
     try{
         const { userId } = req;
-        const { code, server } = req.query;
+        const { code, server } = req.body;
 
-        const tokenEndpoint = `${server}/oauth/v2/token`;
+        const serverUrl = decodeURIComponent(server);
+
+        const tokenEndpoint = `${serverUrl}/oauth/v2/token`;
 
         const params = new URLSearchParams();
         params.append("grant_type", "authorization_code");
@@ -19,6 +21,8 @@ async function zohoCrmAuth(req, res){
     
         const response = await axios.post(tokenEndpoint, params);
         const data = response.data;
+
+        console.log(response)
 
         const integration = {
             userId,
@@ -45,5 +49,5 @@ async function zohoCrmAuth(req, res){
 }
 
 module.exports = {
-    zohoCrmAuth
+    connectZohoCrm
 }

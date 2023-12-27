@@ -231,8 +231,8 @@ functions:
     handler: ./handlers/integrations.handler
     events:
       - http:
-          path: /i/zoho/callback
-          method: GET
+          path: /zoho/connect
+          method: POST
           cors: true
 
 
