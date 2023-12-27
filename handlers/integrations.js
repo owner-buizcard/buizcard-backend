@@ -4,6 +4,8 @@ const serverless = require("serverless-http");
 const bodyParser = require('body-parser');
 
 const processHandler = require("../core/processHandler");
+const configurePassport = require("../middlewares/integration-config")
+const sessionMiddleware = require("../middlewares/session-init")
 
 const service = require('../services/integrations');
 const cors_origin = require("../core/cors_origin");
@@ -14,6 +16,23 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors_origin());
+
+app.use(sessionMiddleware);
+
+const passport = configurePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+const passportMiddleware = (req, res, next) => {
+    req.passport = passport; 
+    next();
+};
+
+app.get("/spreadsheet/connect", passportMiddleware, processHandler(service.authSpreadSheet));
+app.get(
+    "/i/spreadsheet/callback",  
+    passport.authenticate('google', { failureRedirect: `${process.env.DOMAIN}/i/spreadsheet/callback` }), 
+    processHandler(service.connectSpreadSheet));
 
 app.use(validateAccessToken);
 

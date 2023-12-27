@@ -15,6 +15,7 @@ provider:
     GOOGLE_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CLIENT_ID}
     GOOGLE_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CLIENT_SECRET}
     GOOGLE_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CALL_BACK}
+    SPREADSHEET_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):SPREADSHEET_CALL_BACK}
     GITHUB_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CLIENT_ID}
     GITHUB_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CLIENT_SECRET}
     GITHUB_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CALL_BACK}
@@ -240,6 +241,14 @@ functions:
       - http:
           path: /hubspot/connect
           method: POST
+          cors: true
+      - http:
+          path: /spreadsheet/connect
+          method: GET
+          cors: true
+      - http:
+          path: /i/spreadsheet/callback
+          method: GET
           cors: true
   export:
     handler: ./handlers/export.handler

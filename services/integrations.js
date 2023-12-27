@@ -2,6 +2,7 @@
 const { default: axios } = require('axios');
 const responser = require("../core/responser");
 const depManager = require('../core/depManager');
+const { generateTokens } = require('./token');
 
 async function connectHubspotCrm(req, res){
     try{
@@ -89,7 +90,52 @@ async function connectZohoCrm(req, res){
     }
 }
 
+async function authSpreadSheet(req, res, next){
+    const passport = req.passport;
+    const {userId} = req.query;
+    passport.authenticate(
+        'google', 
+        { 
+            accessType: 'offline',
+            prompt: 'consent', 
+            scope: ['profile', 'email', 'https://www.googleapis.com/auth/spreadsheets'],
+            state: userId 
+        })(req, res, next);
+}
+
+async function connectSpreadSheet(req, res){
+    try{
+        const googleUser = req.user;
+        const userId = req.query.state;
+
+        const integration = {
+            userId,
+            integrationId: "spreadsheet",
+            accessToken: googleUser.accessToken,
+            refreshToken: googleUser.refreshToken
+        }
+
+        const [user] = await Promise.all([
+            depManager.USER.getUserModel().findById(userId),
+            depManager.INTEGRATIONS.getIntegrationsModel().create(integration)
+        ]);
+
+        user.integrations.push("spreadsheet");
+
+        await user.save();
+
+        accessToken = generateTokens(user._id).accessToken;
+        res.redirect(`${process.env.DOMAIN}/i/spreadsheet/callback?token=${accessToken}`);
+    }catch(error){
+        console.log(error);
+        return responser.error(res, null, "GLOBAL_E001");
+    }
+
+}
+
 module.exports = {
     connectZohoCrm,
-    connectHubspotCrm
+    connectHubspotCrm,
+    authSpreadSheet,
+    connectSpreadSheet
 }
