@@ -90,6 +90,51 @@ async function connectZohoCrm(req, res){
     }
 }
 
+async function authPipedrive(req, res, next){
+    const { passport } = req;
+    const { userId } = req.query;
+
+    passport.authenticate('pipedrive', { state: userId }, (err, user) => {
+        if (err) {
+            return next(err);
+        }
+        req.user = user;
+        return next();
+    })(req, res, next);
+}
+
+async function connectPipedrive(req, res){
+    try{
+        const pipedriveUser = req.user;
+        const userId = req.query.state;
+
+        console.log(pipedriveUser);
+        console.log(userId);
+
+        // const integration = {
+        //     userId,
+        //     integrationId: "spreadsheet",
+        //     accessToken: googleUser.accessToken,
+        //     refreshToken: googleUser.refreshToken
+        // }
+
+        // const [user] = await Promise.all([
+        //     depManager.USER.getUserModel().findById(userId),
+        //     depManager.INTEGRATIONS.getIntegrationsModel().create(integration)
+        // ]);
+
+        // user.integrations.push("spreadsheet");
+
+        // await user.save();
+
+        // accessToken = generateTokens(user._id).accessToken;
+        res.redirect(`${process.env.DOMAIN}/i/spreadsheet/callback?token=${'accessToken'}`);
+    }catch(error){
+        console.log(error);
+        return responser.error(res, null, "GLOBAL_E001");
+    }
+}
+
 async function authSpreadSheet(req, res, next){
     const passport = req.passport;
     const {userId} = req.query;
@@ -135,6 +180,8 @@ async function connectSpreadSheet(req, res){
 module.exports = {
     connectZohoCrm,
     connectHubspotCrm,
+    authPipedrive,
+    connectPipedrive,
     authSpreadSheet,
     connectSpreadSheet
 }

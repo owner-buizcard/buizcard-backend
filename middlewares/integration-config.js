@@ -1,5 +1,6 @@
 const passport = require('passport');
 const { Strategy: GoogleStrategy } = require('passport-google-oauth20');
+const PipedriveOAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 
 module.exports = ()=>{
 
@@ -23,6 +24,24 @@ module.exports = ()=>{
             }
         )
     );
+
+    passport.use('pipedrive', new PipedriveOAuth2Strategy({
+        authorizationURL: 'https://oauth.pipedrive.com/oauth/authorize',
+        tokenURL: 'https://oauth.pipedrive.com/oauth/token',
+        clientID: process.env.PIPEDRIVE_CLIENT_ID,
+        clientSecret: process.env.PIPEDRIVE_CLIENT_SECRET,
+        callbackURL: process.env.PIPEDRIVE_CALL_BACK
+      },
+      (accessToken, refreshToken, profile, done) => {
+        const user = {
+            accessToken,
+            refreshToken,
+            profile
+        };
+        return done(null, user);
+      }
+    ));
+    
 
     passport.serializeUser(function(user, done) {
         done(null, user);

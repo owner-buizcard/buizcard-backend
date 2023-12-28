@@ -28,6 +28,12 @@ const passportMiddleware = (req, res, next) => {
     next();
 };
 
+app.get("/pipedrive/connect", passportMiddleware, processHandler(service.authPipedrive));
+app.get(
+    "/i/pipedrive/callback",  
+    passport.authenticate('pipedrive', { failureRedirect: `${process.env.DOMAIN}/i/pipedrive/callback` }), 
+    processHandler(service.connectPipedrive));
+
 app.get("/spreadsheet/connect", passportMiddleware, processHandler(service.authSpreadSheet));
 app.get(
     "/i/spreadsheet/callback",  
