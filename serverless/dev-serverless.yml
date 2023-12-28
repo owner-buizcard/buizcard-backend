@@ -35,6 +35,9 @@ provider:
     EMAIL_API_KEY: ${file(./config/config.${self:custom.currentStage}.json):EMAIL_API_KEY}
     FROM_EMAIL: ${file(./config/config.${self:custom.currentStage}.json):FROM_EMAIL}
     FROM_EMAIL_NAME: ${file(./config/config.${self:custom.currentStage}.json):FROM_EMAIL_NAME}
+    TWILLIO_SID: ${file(./config/config.${self:custom.currentStage}.json):TWILLIO_SID}
+    TWILLIO_TOKEN: ${file(./config/config.${self:custom.currentStage}.json):TWILLIO_TOKEN}
+    TWILLIO_NUMBER: ${file(./config/config.${self:custom.currentStage}.json):TWILLIO_NUMBER}
     DOMAIN: ${file(./config/config.${self:custom.currentStage}.json):DOMAIN}
     ORIGIN: ${file(./config/config.${self:custom.currentStage}.json):ORIGIN}
     S3_BUCKET_NAME: ${file(./config/config.${self:custom.currentStage}.json):S3_BUCKET_NAME}
@@ -285,4 +288,12 @@ functions:
           path: /csv/export
           method: POST
           cors: true
+  alerts:
+    handler: ./handlers/alerts.handler
+    events:
+      - http:
+          path: /whatsapp/alert
+          method: POST
+          cors: true
+
 
