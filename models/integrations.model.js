@@ -10,6 +10,10 @@ const _integrationssSchema = new Schema({
         type: String,
         required: true
     },
+    meta: {
+        type: Object,
+        default: null
+    },
     accessToken: {
         type: String,
         default: null

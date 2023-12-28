@@ -19,6 +19,7 @@ app.use(validateAccessToken);
 
 app.post("/zoho/export", processHandler(service.zohoExport));
 app.post("/hubspot/export", processHandler(service.hubspotExport));
+app.post("/spreadsheet/export", processHandler(service.spreadSheetExport));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false

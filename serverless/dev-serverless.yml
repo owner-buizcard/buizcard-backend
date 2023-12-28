@@ -12,6 +12,7 @@ provider:
   environment:
     TOKEN_SECRET: ${file(./config/config.${self:custom.currentStage}.json):TOKEN_SECRET}
     SESSION_SECRET: ${file(./config/config.${self:custom.currentStage}.json):SESSION_SECRET}
+    GOOGLE_API_KEY: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_API_KEY}
     GOOGLE_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CLIENT_ID}
     GOOGLE_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CLIENT_SECRET}
     GOOGLE_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CALL_BACK}
@@ -259,6 +260,10 @@ functions:
           cors: true
       - http:
           path: /hubspot/export
+          method: POST
+          cors: true
+      - http:
+          path: /spreadsheet/export
           method: POST
           cors: true
 

@@ -1,6 +1,7 @@
 {
     "en": {
         "S001": "Exported to ZOHO CRM successfully!",
-        "S002": "Exported to HUBSPOT CRM successfully!"
+        "S002": "Exported to HUBSPOT CRM successfully!",
+        "S003": "Exported to Spreadsheet successfully!"
     }
 }

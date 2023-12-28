@@ -130,7 +130,6 @@ async function connectSpreadSheet(req, res){
         console.log(error);
         return responser.error(res, null, "GLOBAL_E001");
     }
-
 }
 
 module.exports = {

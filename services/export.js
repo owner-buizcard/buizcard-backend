@@ -3,6 +3,106 @@ const depManager = require("../core/depManager");
 const responser = require("../core/responser");
 const hubspot = require('@hubspot/api-client')
 
+// Spreadsheet
+async function spreadSheetExport(req, res) {
+    try {
+        const { userId } = req;
+        const { contacts } = req.body;
+
+        const ss = await depManager.INTEGRATIONS.getIntegrationsModel().findOne({ userId, integrationId: "spreadsheet" });
+        
+        await createContactsInSpreadsheet(ss, contacts, userId)
+
+        responser.success(res, true, "EXPORT_S003");
+    } catch (error) {
+        handleError(error, res);
+    }
+}
+
+async function getSpreadsheetAccessToken(refreshToken) {
+    const tokenURL = 'https://oauth2.googleapis.com/token';
+    const response = await axios.post(tokenURL, {
+        refresh_token: refreshToken,
+        grant_type: 'refresh_token',
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    });
+
+    return response.data?.access_token;
+}
+
+async function createContactsInSpreadsheet(ss, contacts, userId) {
+
+    try {
+        await makeSpreadsheetRequest(contacts, ss.accessToken, ss.meta, userId);
+    } catch (error) {
+        console.log(error);
+        if (error.response && error.response.status === 401) {
+            const accessToken = await getSpreadsheetAccessToken(ss.refreshToken);
+            await Promise.all([
+                makeSpreadsheetRequest(contacts, accessToken, ss.meta),
+                depManager.INTEGRATIONS.getIntegrationsModel().updateOne({userId, integrationId: "spreadsheet"}, {accessToken})
+            ]);
+        }
+    }
+}
+
+async function makeSpreadsheetRequest(contacts, accessToken, meta, userId) {
+
+    let spreadsheetId;
+    
+    if(meta && meta.spreadsheetId){
+        spreadsheetId = meta.spreadsheetId;
+    }else{
+        spreadsheetId = await getSpreadsheetId(accessToken, userId);
+    }
+
+    let values = contacts.map(contact => {return Object.values(contact);})
+
+    values = [ 
+        [], 
+        ["Name", "Email", "Phone"],
+        [], 
+        ...values
+    ]
+
+    const range = `Sheet1!A1:C`;
+    const endPoint = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=RAW&key=${process.env.GOOGLE_API_KEY}`;
+    const data = {values: values};
+    const header = {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+    };
+    const response = await axios.post(endPoint, data, header);
+    return response;
+}
+
+async function getSpreadsheetId(accessToken, userId){
+    const requestBody = {
+        properties: {
+          title: 'Bizcard Contacts'
+        }
+    };
+
+    const response = await axios.post(`https://sheets.googleapis.com/v4/spreadsheets?key=${process.env.GOOGLE_API_KEY}`, requestBody, {
+        headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    const spreadsheetId = response.data.spreadsheetId;
+
+    console.log(spreadsheetId);
+
+    await depManager.INTEGRATIONS.getIntegrationsModel().updateOne({userId, integrationId: "spreadsheet"}, {meta: {spreadsheetId}})
+
+    return spreadsheetId;
+}
+
+
 // HUBSPOT
 
 async function hubspotExport(req, res) {
@@ -135,5 +235,6 @@ function handleError(error, res) {
 
 module.exports = {
     zohoExport,
-    hubspotExport
+    hubspotExport,
+    spreadSheetExport
 };
