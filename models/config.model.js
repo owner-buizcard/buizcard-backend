@@ -24,7 +24,7 @@ const _fieldTypesSchema = new Schema({
     },
 })
 
-const _backgroundSchema = new Schema({
+const _configSchema = new Schema({
     category: {
         type: String,
         required: true
@@ -39,11 +39,11 @@ const getFieldTypesModel = () => {
     return mongoose.model("FieldTypes", _fieldTypesSchema, "FieldTypes");
 };
 
-const getBackgroundModel = () => {
-    return mongoose.model("Backgrounds", _backgroundSchema, "Backgrounds");
+const getConfigModel = () => {
+    return mongoose.model("Configs", _configSchema, "Configs");
 };
 
 module.exports = {
     getFieldTypesModel,
-    getBackgroundModel
+    getConfigModel
 };
