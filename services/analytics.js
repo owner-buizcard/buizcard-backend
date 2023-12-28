@@ -4,23 +4,29 @@ const {ObjectId} = require('mongodb');
 
 async function getUserAnalytics(req, res) {
     try {
-        const { userId } = req.query;
+        const { userId } = req;
 
-        const cardIds = await depManager.CARD.getCardModel().find({
+        const cards = await depManager.CARD.getCardModel().find({
             createdBy: userId,
             status: { $ne: "DELETED" },
-        }).select('_id');
+        },{
+            _id: 1,
+            name: 1,
+            cardName: 1,
+            picture: 1,
+            logo: 1,
+        });
 
-        const analyticsPromises = cardIds.map(async (id) => {
-            const cardAnalytics = await depManager.ANALYTICS.getAnalyticsModel().findOne({ cardId: id });
-            return { cardId: id, analytics: cardAnalytics || { viewCount: 0, uniqueVisitCount: 0, savedCount: 0, sharedCount: 0, connectedCount: 0, webClickCount: 0 } };
+        const analyticsPromises = cards.map(async (card) => {
+            const cardAnalytics = await depManager.ANALYTICS.getAnalyticsModel().findOne({ cardId: card._id }, {_id: 0, cardId: 0});
+            return { card: card, analytics: cardAnalytics || { viewCount: 0, uniqueVisitCount: 0, savedCount: 0, sharedCount: 0, connectedCount: 0, webClickCount: 0 } };
         });
 
         const analyticsResults = await Promise.all(analyticsPromises);
 
         analyticsResults.sort((a, b) => b.analytics.viewCount - a.analytics.viewCount);
 
-        const sortedCardIds = analyticsResults.map(item => item.cardId);
+        const sortedCards = analyticsResults.map(item => item);
 
         const totals = analyticsResults.reduce((acc, item) => {
             const analytics = item.analytics;
@@ -40,7 +46,7 @@ async function getUserAnalytics(req, res) {
             totalWebClickCount: 0,
         });
 
-        return responser.success(res, { totals, sortedCardIds }, "ANALYTICS_S001");
+        return responser.success(res, { totals, sortedCards }, "ANALYTICS_S001");
     } catch (error) {
         console.error(error);
         return responser.success(res, null, "GLOBAL_E001");
