@@ -4,7 +4,8 @@ const responser = require("../core/responser");
 const hubspot = require('@hubspot/api-client')
 const Excel = require('exceljs');
 const fs = require('fs');
-const { uploadFile, uploadObjectToS3Bucket } = require("../core/utils");
+const fsPromise = require('fs').promises;
+const { uploadObjectToS3Bucket } = require("../core/utils");
 
 // Csv
 async function csvExport(req, res) {
@@ -12,7 +13,26 @@ async function csvExport(req, res) {
         const { userId } = req;
         const { contacts } = req.body;
 
-        responser.success(res, true, "EXPORT_S003");
+        const fields = Object.keys(contacts[0]);
+
+        let csv = fields.join(',') + '\n';
+
+        contacts.forEach(contact => {
+            const row = fields.map(field => contact[field] || '').join(',');
+            csv += row + '\n';
+        });
+
+        const filePath = `Bizcard.csv`;
+        await fsPromise.writeFile(filePath, csv, 'utf8');
+
+        const mimetype = 'text/csv';
+        const fileData = await fsPromise.readFile(filePath);
+
+        const fileUrl = await uploadObjectToS3Bucket(`${userId}/bizcard-contacts.csv`, mimetype, fileData);
+        await fsPromise.unlink(filePath);
+        const file_url = fileUrl.substring(0, fileUrl.indexOf('?'));
+
+        responser.success(res, file_url, "EXPORT_S004");
     } catch (error) {
         handleError(error, res);
     }
