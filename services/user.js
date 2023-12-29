@@ -82,6 +82,7 @@ async function update(req, res){
         return responser.success(res, user, "USER_S001");
 
     }catch(error){
+        console.log(error);
         return responser.success(res, null, "USER_E001");
     }
 }
