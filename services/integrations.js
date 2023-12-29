@@ -4,6 +4,35 @@ const responser = require("../core/responser");
 const depManager = require('../core/depManager');
 const { generateTokens } = require('./token');
 
+async function connectWhatsapp(req, res){
+    try{
+        const { userId } = req;
+        const { whatsappNumber } = req.body;
+
+        const integration = {
+            userId,
+            integrationId: "whatsapp",
+            meta: {
+                number: whatsappNumber
+            }
+        }
+
+        const [created, user] = await Promise.all([
+            depManager.INTEGRATIONS.getIntegrationsModel().create(integration),
+            depManager.USER.getUserModel().findById(userId)
+        ]);
+
+        user.integrations.push("whatsapp");
+
+        await user.save();
+
+        return responser.success(res, created, "INTEGRATION_S004");
+    }catch(error){
+        console.log(error);
+        return responser.error(res, null, "GLOBAL_E001");
+    }
+}
+
 async function connectHubspotCrm(req, res){
     try{
         const { userId } = req;

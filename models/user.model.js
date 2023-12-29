@@ -21,9 +21,36 @@ const _userSchema = new Schema({
         type: String,
         default: null,
     },
-    company: {
+    gender: {
+        enum: ["Male", "Female", "Non-Binary", "Prefer not to Answer"],
+        type: String, 
+        default: null
+    },
+    dateOfBirth: {
+        type: Date, 
+        default: null
+    },
+    companyName: {
         type: String,
         default: null,
+    },
+    companyWebsite: {
+        type: String,
+        default: null,
+    },
+    address: {
+        addressLine1: {
+            type: String,
+            default: null
+        },
+        state: {
+            type: String,
+            default: null
+        },
+        country: {
+            type: String,
+            default: null
+        }
     },
     picture: {
         type: String,
@@ -41,6 +68,23 @@ const _userSchema = new Schema({
     emailVerified: {
         type: Boolean,
         default: false
+    },
+    additionalEmail: {
+        type: String,
+        default: null,
+        maxLength: 320
+    },
+    additionalPhoneNumber: {
+        type: String,
+        default: null
+    },
+    whatsappNumber: {
+        type: String,
+        default: null
+    },
+    telegramNumber: {
+        type: String,
+        default: null
     },
     password: {
         type: String,

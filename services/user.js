@@ -23,7 +23,7 @@ async function update(req, res){
             return responser.success(res, null, "USER_E002");
         }
 
-        const {firstName, lastName, picture, locale, countryCode, dateFormat, defaultCurrency, phoneNumber} = req.body;
+        const {firstName, designation, additionalEmail, additionalPhoneNumber, whatsappNumber, companyName, companyWebsite, gender, dateOfBirth, address, lastName, picture, locale, countryCode, dateFormat, defaultCurrency, phoneNumber} = req.body;
 
         if(firstName){
             user.firstName = firstName;
@@ -33,6 +33,33 @@ async function update(req, res){
         }
         if(picture){
             user.picture = picture;
+        }
+        if(designation){
+            user.designation = designation;
+        }
+        if(additionalEmail){
+            user.additionalEmail = additionalEmail;
+        }
+        if(additionalPhoneNumber){
+            user.additionalPhoneNumber = additionalPhoneNumber;
+        }
+        if(whatsappNumber){
+            user.whatsappNumber = whatsappNumber;
+        }
+        if(companyName){
+            user.companyName = companyName;
+        }
+        if(companyWebsite){
+            user.companyWebsite = companyWebsite;
+        }
+        if(gender){
+            user.gender = gender;
+        }
+        if(dateOfBirth){
+            user.dateOfBirth = dateOfBirth;
+        }
+        if(address){
+            user.address = address;
         }
         if(locale){
             user.locale = locale;
