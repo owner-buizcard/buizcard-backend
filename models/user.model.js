@@ -22,7 +22,7 @@ const _userSchema = new Schema({
         default: null,
     },
     gender: {
-        enum: ["Male", "Female", "Non-Binary", "Prefer not to Answer"],
+        enum: ["Male", "Female", "Non-Binary", "Prefer not to Answer", null],
         type: String, 
         default: null
     },
