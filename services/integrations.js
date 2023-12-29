@@ -166,8 +166,9 @@ async function connectSpreadSheet(req, res){
         ]);
 
         user.integrations.push("spreadsheet");
-
         await user.save();
+
+        console.log(user);
 
         accessToken = generateTokens(user._id).accessToken;
         res.redirect(`${process.env.DOMAIN}/i/spreadsheet/callback?token=${accessToken}`);
