@@ -1,7 +1,6 @@
 const { verifyToken } = require("../services/token");
 const responser = require("../core/responser");
 async function validateAccessToken(req, res, next){
-
     try{
         const authHeader = req.headers.authorization;
 
