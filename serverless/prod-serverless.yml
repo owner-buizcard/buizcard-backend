@@ -1,0 +1,299 @@
+service: bizcard-backend
+frameworkVersion: '3'
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  timeout: 30
+  stage: prod
+  environment:
+    TOKEN_SECRET: ${file(./config/config.${self:custom.currentStage}.json):TOKEN_SECRET}
+    SESSION_SECRET: ${file(./config/config.${self:custom.currentStage}.json):SESSION_SECRET}
+    GOOGLE_API_KEY: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_API_KEY}
+    GOOGLE_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CLIENT_ID}
+    GOOGLE_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CLIENT_SECRET}
+    GOOGLE_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):GOOGLE_CALL_BACK}
+    SPREADSHEET_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):SPREADSHEET_CALL_BACK}
+    GITHUB_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CLIENT_ID}
+    GITHUB_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CLIENT_SECRET}
+    GITHUB_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):GITHUB_CALL_BACK}
+    ZOHO_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):ZOHO_CLIENT_ID}
+    ZOHO_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):ZOHO_CLIENT_SECRET}
+    ZOHO_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):ZOHO_CALL_BACK}
+    PIPEDRIVE_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):PIPEDRIVE_CLIENT_ID}
+    PIPEDRIVE_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):PIPEDRIVE_CLIENT_SECRET}
+    PIPEDRIVE_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):PIPEDRIVE_CALL_BACK}
+    HUBSPOT_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):HUBSPOT_CLIENT_ID}
+    HUBSPOT_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):HUBSPOT_CLIENT_SECRET}
+    HUBSPOT_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):HUBSPOT_CALL_BACK}
+    LINKEDIN_CLIENT_ID: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CLIENT_ID}
+    LINKEDIN_CLIENT_SECRET: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CLIENT_SECRET}
+    LINKEDIN_CALL_BACK: ${file(./config/config.${self:custom.currentStage}.json):LINKEDIN_CALL_BACK}
+    EMAIL_API_KEY: ${file(./config/config.${self:custom.currentStage}.json):EMAIL_API_KEY}
+    FROM_EMAIL: ${file(./config/config.${self:custom.currentStage}.json):FROM_EMAIL}
+    FROM_EMAIL_NAME: ${file(./config/config.${self:custom.currentStage}.json):FROM_EMAIL_NAME}
+    TWILLIO_SID: ${file(./config/config.${self:custom.currentStage}.json):TWILLIO_SID}
+    TWILLIO_TOKEN: ${file(./config/config.${self:custom.currentStage}.json):TWILLIO_TOKEN}
+    TWILLIO_NUMBER: ${file(./config/config.${self:custom.currentStage}.json):TWILLIO_NUMBER}
+    DOMAIN: ${file(./config/config.${self:custom.currentStage}.json):DOMAIN}
+    ORIGIN: ${file(./config/config.${self:custom.currentStage}.json):ORIGIN}
+    S3_BUCKET_NAME: ${file(./config/config.${self:custom.currentStage}.json):S3_BUCKET_NAME}
+
+custom:
+  prune:
+    automatic: true
+    number: 1
+  serverless-offline:
+    httpPort: 4000
+  defaultStage: dev
+  currentStage: ${opt:stage, self:custom.defaultStage}
+  stage: ${self:custom.currentStage}
+
+functions:
+  auth:
+    handler: ./handlers/auth.handler
+    events:
+      - http:
+          path: /ping
+          method: GET
+          cors: true
+      - http:
+          path: /auth/signup
+          method: POST
+          cors: true
+      - http:
+          path: /auth/login
+          method: POST
+          cors: true
+      - http:
+          path: /auth/google
+          method: GET
+          cors: true
+      - http:
+          path: /auth/google/callback
+          method: GET
+          cors: true
+      - http:
+          path: /auth/github
+          method: GET
+          cors: true
+      - http:
+          path: /auth/github/callback
+          method: GET
+          cors: true
+      - http:
+          path: /auth/linkedin/callback
+          method: GET
+          cors: true
+      - http:
+          path: /auth/password/forgot
+          method: POST
+          cors: true
+      - http:
+          path: /auth/password/reset
+          method: PUT
+          cors: true
+  token:
+    handler: ./handlers/token.handler
+    events:
+      - http:
+          path: /accessToken
+          method: POST
+          cors: true
+  main:
+    handler: ./handlers/main.handler
+    events:
+      - http:
+          path: /config
+          method: GET
+          cors: true
+      - http:
+          path: /main
+          method: GET
+          cors: true
+  user:
+    handler: ./handlers/user.handler
+    events:
+      - http:
+          path: /me
+          method: PUT
+          cors: true
+      - http:
+          path: /me
+          method: DELETE
+          cors: true
+  card:
+    handler: ./handlers/card.handler
+    events:
+      - http:
+          path: /card
+          method: POST
+          cors: true
+      - http:
+          path: /card-image
+          method: POST
+          cors: true
+      - http:
+          path: /card
+          method: PUT
+          cors: true
+      - http:
+          path: /card-preview
+          method: GET
+          cors: true
+      - http:
+          path: /card
+          method: GET
+          cors: true
+      - http:
+          path: /user-cards
+          method: GET
+          cors: true
+      - http:
+          path: /card
+          method: DELETE
+          cors: true
+  contact:
+    handler: ./handlers/contact.handler
+    events:
+      - http:
+          path: /contact
+          method: POST
+          cors: true
+      - http:
+          path: /contact-request
+          method: POST
+          cors: true
+      - http:
+          path: /contact-form
+          method: POST
+          cors: true
+      - http:
+          path: /contact
+          method: GET
+          cors: true
+      - http:
+          path: /user-contacts
+          method: GET
+          cors: true
+      - http:
+          path: /contact
+          method: DELETE
+          cors: true
+      - http:
+          path: /contact
+          method: PUT
+          cors: true
+  analytics:
+    handler: ./handlers/analytics.handler
+    events:
+      - http:
+          path: /card-analytics
+          method: GET
+          cors: true
+      - http:
+          path: /user-analytics
+          method: GET
+          cors: true
+  share:
+    handler: ./handlers/share.handler
+    events:
+      - http:
+          path: /app/p/card/{cardId}
+          method: GET
+          cors: true
+  card-log:
+    handler: ./handlers/card-log.handler
+    events:
+      - http:
+          path: /card-log
+          method: GET
+          cors: true
+      - http:
+          path: /card-log
+          method: POST
+          cors: true
+  signature:
+    handler: ./handlers/signature.handler
+    events:
+      - http:
+          path: /email-signature
+          method: POST
+          cors: true
+  virtual-background:
+    handler: ./handlers/virtual-background.handler
+    events:
+      - http:
+          path: /vb-new
+          method: POST
+          cors: true
+      - http:
+          path: /vb
+          method: POST
+          cors: true
+      - http:
+          path: /vb
+          method: GET
+          cors: true
+  integrations:
+    handler: ./handlers/integrations.handler
+    events:
+      - http:
+          path: /zoho/connect
+          method: POST
+          cors: true
+      - http:
+          path: /hubspot/connect
+          method: POST
+          cors: true
+      - http:
+          path: /spreadsheet/connect
+          method: GET
+          cors: true
+      - http:
+          path: /i/spreadsheet/callback
+          method: GET
+          cors: true
+      - http:
+          path: /pipedrive/connect
+          method: GET
+          cors: true
+      - http:
+          path: /i/pipedrive/callback
+          method: GET
+          cors: true
+  export:
+    handler: ./handlers/export.handler
+    events:
+      - http:
+          path: /zoho/export
+          method: POST
+          cors: true
+      - http:
+          path: /hubspot/export
+          method: POST
+          cors: true
+      - http:
+          path: /spreadsheet/export
+          method: POST
+          cors: true
+      - http:
+          path: /excel/export
+          method: POST
+          cors: true
+      - http:
+          path: /csv/export
+          method: POST
+          cors: true
+  alerts:
+    handler: ./handlers/alerts.handler
+    events:
+      - http:
+          path: /whatsapp/alert
+          method: POST
+          cors: true
+
+
