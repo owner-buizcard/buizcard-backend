@@ -160,6 +160,10 @@ functions:
     handler: ./handlers/contact.handler
     events:
       - http:
+          path: /contact-details
+          method: POST
+          cors: true
+      - http:
           path: /contact
           method: POST
           cors: true

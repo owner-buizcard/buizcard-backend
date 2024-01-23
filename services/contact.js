@@ -19,6 +19,24 @@ async function create(req, res) {
     }
 }
 
+async function createDetails(req, res) {
+    try {
+        const { name, email, phone, title, company, website, picture, location } = req.body;
+        const details = { name, email, phone, title, company, website, picture, location };
+
+        const contact = await depManager.CONTACT.getContactModel().create({ 
+            userId, 
+            details, 
+            type: "Own", 
+            connectedAt: Date.now()
+        });
+
+        return responser.success(res, contact, "CONTACT_S006");
+    } catch (error) {
+        return responser.error(res, "Error creating contacts", "CONTACT_E001");
+    }
+}
+
 async function connectForm(req, res) {
     try {
         const { name, email, phone, title, company, message, userId, connectedBy } = req.body;
@@ -128,6 +146,7 @@ async function addTags(req, res){
 
 module.exports = {
     create,
+    createDetails,
     createRequest,
     connectForm,
     get,
