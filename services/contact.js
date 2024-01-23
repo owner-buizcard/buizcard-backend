@@ -27,7 +27,7 @@ async function createDetails(req, res) {
         const contact = await depManager.CONTACT.getContactModel().create({ 
             userId, 
             details, 
-            type: "Own", 
+            type: "PaperCard", 
             connectedAt: Date.now()
         });
 
