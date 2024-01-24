@@ -24,6 +24,8 @@ async function createDetails(req, res) {
         const { name, email, phone, title, company, website, picture, location } = req.body;
         const details = { name, email, phone, title, company, website, picture, location };
 
+        console.log(details);
+
         const contact = await depManager.CONTACT.getContactModel().create({ 
             userId, 
             details, 
@@ -33,6 +35,7 @@ async function createDetails(req, res) {
 
         return responser.success(res, contact, "CONTACT_S006");
     } catch (error) {
+        console.log(error);
         return responser.error(res, "Error creating contacts", "CONTACT_E001");
     }
 }
