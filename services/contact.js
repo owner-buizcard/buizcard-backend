@@ -96,7 +96,6 @@ async function get(req, res){
 async function getUserContacts(req, res){
     try{
         const userId = req.userId;
-
         const condition = [
             {
                 $match: { userId: new mongoose.Types.ObjectId(userId) }
@@ -110,13 +109,15 @@ async function getUserContacts(req, res){
                 }
             },
             {
+                $unwind: {
+                    path: '$card',
+                    preserveNullAndEmptyArrays: true // Preserve documents with no matching 'card'
+                }
+            },
+            {
                 $addFields: {
                     card: {
-                        $cond: {
-                            if: { $ne: ['$cardId', null] },
-                            then: '$card',
-                            else: null
-                        }
+                        $ifNull: ['$card', null] // If 'card' is null, set it to null
                     }
                 }
             }
