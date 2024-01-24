@@ -23,7 +23,7 @@ app.post("/contact-request", processHandler(service.createRequest));
 app.post("/contact-form", processHandler(service.connectForm));
 app.get("/contact", processHandler(service.get));
 app.get("/user-contacts", processHandler(service.getUserContacts));
-app.put("/contact", processHandler(service.addTags));
+app.put("/contact", processHandler(service.updateContact));
 app.delete("/contact", processHandler(service.deleteContact));
 
 module.exports.handler = serverless(app, {

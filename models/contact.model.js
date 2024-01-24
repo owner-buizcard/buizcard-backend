@@ -14,6 +14,10 @@ const _contactSchema = new Schema({
         type: Object,
         default: null
     },
+    isFavourite: {
+        type: Boolean,
+        default: false
+    },
     type: {
         type: String,
         default: "Bizcard"
@@ -25,6 +29,10 @@ const _contactSchema = new Schema({
     tags: {
         type: Object,
         default: []
+    },
+    notes: {
+        type: String,
+        default: null
     },
     connectedAt: { 
         type: Date, 

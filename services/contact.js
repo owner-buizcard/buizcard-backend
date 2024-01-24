@@ -143,11 +143,22 @@ async function deleteContact(req, res){
     }
 }
 
-async function addTags(req, res){
+// async function addTags(req, res){
+//     try{
+//         const contactId = req.query.contactId
+//         const { tags } = req.body;
+//         const updated = await depManager.CONTACT.getContactModel().findOneAndUpdate({_id: contactId}, {tags: tags}, { new: true });
+//         return responser.success(res, updated, "CONTACT_S007");
+//     }catch(error){
+//         return responser.success(res, null, "GLOBAL_E001");
+//     }
+// }
+
+async function updateContact(req, res){
     try{
         const contactId = req.query.contactId
-        const { tags } = req.body;
-        const updated = await depManager.CONTACT.getContactModel().findOneAndUpdate({_id: contactId}, {tags: tags}, { new: true });
+        const data = req.body;
+        const updated = await depManager.CONTACT.getContactModel().findOneAndUpdate({_id: contactId}, data, { new: true });
         return responser.success(res, updated, "CONTACT_S007");
     }catch(error){
         return responser.success(res, null, "GLOBAL_E001");
@@ -162,5 +173,5 @@ module.exports = {
     get,
     getUserContacts,
     deleteContact,
-    addTags
+    updateContact
 }
