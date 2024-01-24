@@ -68,29 +68,31 @@ async function fetchMainData(req, res) {
         ];   
 
         const condition = [
-          {
-              $match: { userId: new mongoose.Types.ObjectId(userId) }
-          },
-          {
-              $lookup: {
-                  from: 'Cards',
-                  localField: 'cardId',
-                  foreignField: '_id',
-                  as: 'card'
-              }
-          },
-          {
-              $addFields: {
-                  card: {
-                      $cond: {
-                          if: { $ne: ['$cardId', null] },
-                          then: '$card',
-                          else: null
-                      }
-                  }
-              }
-          }
-      ];
+            {
+                $match: { userId: new mongoose.Types.ObjectId(userId) }
+            },
+            {
+                $lookup: {
+                    from: 'Cards',
+                    localField: 'cardId',
+                    foreignField: '_id',
+                    as: 'card'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$card',
+                    preserveNullAndEmptyArrays: true 
+                }
+            },
+            {
+                $addFields: {
+                    card: {
+                        $ifNull: ['$card', null] 
+                    }
+                }
+            }
+        ];
 
         const [user, cards, contacts, fieldTypes, configs] = await Promise.all([
             depManager.USER.getUserModel().findById(userId),

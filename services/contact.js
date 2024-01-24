@@ -111,13 +111,13 @@ async function getUserContacts(req, res){
             {
                 $unwind: {
                     path: '$card',
-                    preserveNullAndEmptyArrays: true // Preserve documents with no matching 'card'
+                    preserveNullAndEmptyArrays: true 
                 }
             },
             {
                 $addFields: {
                     card: {
-                        $ifNull: ['$card', null] // If 'card' is null, set it to null
+                        $ifNull: ['$card', null] 
                     }
                 }
             }
