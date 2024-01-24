@@ -93,6 +93,7 @@ async function fetchMainData(req, res) {
                 }
             }
         ];
+        
 
         const [user, cards, contacts, fieldTypes, configs] = await Promise.all([
             depManager.USER.getUserModel().findById(userId),
