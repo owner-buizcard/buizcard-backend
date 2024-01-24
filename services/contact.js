@@ -21,10 +21,8 @@ async function create(req, res) {
 
 async function createDetails(req, res) {
     try {
-        const { name, email, phone, title, company, website, picture, location } = req.body;
-        const details = { name, email, phone, title, company, website, picture, location };
-
-        console.log(details);
+        const { userId } = req;
+        const details = req.body;
 
         const contact = await depManager.CONTACT.getContactModel().create({ 
             userId, 
