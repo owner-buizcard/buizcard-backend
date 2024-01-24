@@ -110,7 +110,15 @@ async function getUserContacts(req, res){
                 }
             },
             {
-                $unwind: '$card'
+                $addFields: {
+                    card: {
+                        $cond: {
+                            if: { $ne: ['$cardId', null] },
+                            then: '$card',
+                            else: null
+                        }
+                    }
+                }
             }
         ];
 
