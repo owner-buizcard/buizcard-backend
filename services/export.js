@@ -273,10 +273,7 @@ async function zohoExport(req, res) {
         ])
         const domain = zoho.server.split('.').filter(Boolean).pop();
         var result = await createContactsInZoho(zoho, domain, contacts, userId);
-        if(result){
-            responser.success(res, true, "EXPORT_S001");
-        }
-        responser.error(res, false, "EXPORT_S001");
+        responser.success(res, true, "EXPORT_S001");
     } catch (error) {
         handleError(error, res);
     }
