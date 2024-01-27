@@ -235,13 +235,14 @@ async function getHubspotAccessToken(refreshToken) {
 async function zohoExport(req, res) {
     try {
         const { userId } = req;
-        const { contacts } = req.body;
+        const { contactIds } = req.body;
 
-        const zoho = await depManager.INTEGRATIONS.getIntegrationsModel().findOne({ userId, integrationId: "zoho_crm" });
+        const [zoho, contactsData] = await Promise.all([
+            depManager.INTEGRATIONS.getIntegrationsModel().findOne({ userId, integrationId: "zoho_crm" }),
+            depManager.CONTACT.getContactModel().find({ _id: { $in: contactIds } })
+        ])
         const domain = zoho.server.split('.').filter(Boolean).pop();
-
-        await createContactsInZoho(zoho, domain, contacts, userId);
-
+        await createContactsInZoho(zoho, domain, contactsData, userId);
         responser.success(res, true, "EXPORT_S001");
     } catch (error) {
         handleError(error, res);
