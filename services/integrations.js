@@ -61,14 +61,12 @@ async function connectHubspotCrm(req, res){
 
         const [created, user] = await Promise.all([
             depManager.INTEGRATIONS.getIntegrationsModel().create(integration),
-            depManager.USER.getUserModel().findById(userId)
+            depManager.USER.getUserModel().findByIdAndUpdate(userId, {
+                $addToSet: { integrations: { $each: ["hubspot_crm"] } }
+            }, { new: true })
         ]);
 
-        user.integrations.push("zoho_crm");
-
-        await user.save();
-
-        return responser.success(res, created, "INTEGRATION_S002");
+        return responser.success(res, {user, created}, "INTEGRATION_S002");
     }catch(error){
         console.log(error);
         return responser.error(res, null, "GLOBAL_E001");
@@ -187,15 +185,12 @@ async function connectSpreadSheet(req, res){
             refreshToken: googleUser.refreshToken
         }
 
-        const [user] = await Promise.all([
-            depManager.USER.getUserModel().findById(userId),
-            depManager.INTEGRATIONS.getIntegrationsModel().create(integration)
+        const [created, user] = await Promise.all([
+            depManager.INTEGRATIONS.getIntegrationsModel().create(integration),
+            depManager.USER.getUserModel().findByIdAndUpdate(userId, {
+                $addToSet: { integrations: { $each: ["spreadsheet"] } }
+            }, { new: true })
         ]);
-
-        user.integrations.push("spreadsheet");
-        await user.save();
-
-        console.log(user);
 
         accessToken = generateTokens(user._id).accessToken;
         res.redirect(`${process.env.DOMAIN}/i/spreadsheet/callback?token=${accessToken}`);
