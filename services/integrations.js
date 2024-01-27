@@ -105,14 +105,12 @@ async function connectZohoCrm(req, res){
 
         const [created, user] = await Promise.all([
             depManager.INTEGRATIONS.getIntegrationsModel().create(integration),
-            depManager.USER.getUserModel().findById(userId)
+            depManager.USER.getUserModel().findByIdAndUpdate(userId, {
+                $addToSet: { integrations: { $each: ["zoho_crm"] } }
+            }, { new: true })
         ]);
 
-        user.integrations.push("zoho_crm");
-
-        await user.save();
-
-        return responser.success(res, created, "INTEGRATION_S001");
+        return responser.success(res, {user, created}, "INTEGRATION_S001");
     }catch(error){
         console.log(error);
         return responser.error(res, null, "GLOBAL_E001");
