@@ -5,6 +5,7 @@ const hubspot = require('@hubspot/api-client')
 const Excel = require('exceljs');
 const fs = require('fs');
 const fsPromise = require('fs').promises;
+const { default: mongoose } = require("mongoose");
 const { uploadObjectToS3Bucket } = require("../core/utils");
 
 // Csv
@@ -237,13 +238,45 @@ async function zohoExport(req, res) {
         const { userId } = req;
         const { contactIds } = req.body;
 
-        const [zoho, contactsData] = await Promise.all([
+        const condition = [
+            {
+                $match: { 
+                    _id: { $in: contactIds.map(id => new mongoose.Types.ObjectId(id)) }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'Cards',
+                    localField: 'cardId',
+                    foreignField: '_id',
+                    as: 'card'
+                }
+            },
+            {
+                $unwind: {
+                    path: '$card',
+                    preserveNullAndEmptyArrays: true 
+                }
+            },
+            {
+                $addFields: {
+                    card: {
+                        $ifNull: ['$card', null] 
+                    }
+                }
+            }
+        ];
+
+        const [zoho, contacts] = await Promise.all([
             depManager.INTEGRATIONS.getIntegrationsModel().findOne({ userId, integrationId: "zoho_crm" }),
-            depManager.CONTACT.getContactModel().find({ _id: { $in: contactIds } })
+            depManager.CONTACT.getContactModel().aggregate(condition)
         ])
         const domain = zoho.server.split('.').filter(Boolean).pop();
-        await createContactsInZoho(zoho, domain, contactsData, userId);
-        responser.success(res, true, "EXPORT_S001");
+        var result = await createContactsInZoho(zoho, domain, contacts, userId);
+        if(result){
+            responser.success(res, true, "EXPORT_S001");
+        }
+        responser.error(res, false, "EXPORT_S001");
     } catch (error) {
         handleError(error, res);
     }
@@ -257,10 +290,10 @@ async function createContactsInZoho(zoho, domain, contacts, userId) {
 
     try {
         const response = await makeZohoRequest(zoho, domain, "Leads", contacts, headers);
-
         if (response.status !== 201) {
-            throw new Error("Failed to create contacts in Zoho CRM");
+            return null;
         }
+        return true;
     } catch (error) {
         if (error.response && error.response.status === 401 && error.response.data && error.response.data.code === "INVALID_TOKEN") {
             const accessToken = await getZohoAccessToken(zoho.refreshToken, zoho.server);
@@ -272,10 +305,11 @@ async function createContactsInZoho(zoho, domain, contacts, userId) {
             ])
 
             if (response.status !== 201) {
-                throw new Error("Failed to create contacts in Zoho CRM");
+                return null;
             }
+            return true;
         } else {
-            throw error;
+            return null;
         }
     }
 }
@@ -283,7 +317,34 @@ async function createContactsInZoho(zoho, domain, contacts, userId) {
 async function makeZohoRequest(zoho, domain, endpoint, data, headers) {
 
     const url = `https://www.zohoapis.${domain}/crm/v2/${endpoint}`;
-    return axios.post(url, { data }, { headers });
+
+    const contactsToExport =  data.map((contact)=>{
+        if(contact.card){
+            return {
+                "First_Name": contact.card.name.firstName || '',
+                "Last_Name": contact.card.name.lastName || '',
+                "Email": contact.card.email || '',
+                "Phone": contact.card.phoneNumber || '',
+                "Address": `${contact.card.address.addressLine1 || ''}, ${contact.card.address.city || ''}, ${contact.card.address.state || ''}, ${contact.card.address.country || ''}, ${contact.card.address.pincode || ''}`,
+                "Company": contact.card.company.companyName || '',
+                "Title": contact.card.company.title || '',
+                "Description": contact.card.company.companyDescription || ''
+            }
+        }else{
+            return {
+                "First_Name": contact.details.name || '',
+                "Last_Name": contact.details.name || '',
+                "Email": contact.details.email || '',
+                "Phone": contact.details.phone || '',
+                "Address": contact.details.location || '',
+                "Company": contact.details.company || '',
+                "Website": contact.details.website || '',
+                "Title": contact.details.title || ''
+            }
+        }
+    })
+
+    return axios.post(url, {"data": contactsToExport}, { headers });
 }
 
 async function getZohoAccessToken(refreshToken, server) {
