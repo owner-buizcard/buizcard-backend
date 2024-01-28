@@ -88,6 +88,8 @@ async function connectZohoCrm(req, res){
         params.append("client_id", process.env.ZOHO_CLIENT_ID);
         params.append("client_secret", process.env.ZOHO_CLIENT_SECRET);
         params.append("redirect_uri", process.env.ZOHO_CALL_BACK);
+
+        console.log(process.env.ZOHO_CALL_BACK);
     
         const response = await axios.post(tokenEndpoint, params);
         const data = response.data;
@@ -153,7 +155,7 @@ async function connectPipedrive(req, res){
         // await user.save();
 
         // accessToken = generateTokens(user._id).accessToken;
-        res.redirect(`${process.env.DOMAIN}/i/spreadsheet/callback?token=${'accessToken'}`);
+        res.redirect(`${process.env.DOMAIN}/i/callback/spreadsheet?token=${'accessToken'}`);
     }catch(error){
         console.log(error);
         return responser.error(res, null, "GLOBAL_E001");
