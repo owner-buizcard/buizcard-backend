@@ -180,11 +180,11 @@ async function getSpreadsheetId(accessToken, userId){
 async function hubspotExport(req, res) {
     try {
         const { userId } = req;
-        const { contacts } = req.body;
+        const { contactIds } = req.body;
 
         const hub = await depManager.INTEGRATIONS.getIntegrationsModel().findOne({ userId, integrationId: "hubspot_crm" });
 
-        await createContactsInHubspot(hub, contacts, userId);
+        await createContactsInHubspot(hub, contactIds, userId);
 
         responser.success(res, true, "EXPORT_S002");
     } catch (error) {
@@ -192,10 +192,10 @@ async function hubspotExport(req, res) {
     }
 }
 
-async function createContactsInHubspot(hub, contacts, userId) {
+async function createContactsInHubspot(hub, ids, userId) {
 
     try {
-        await makeHubspotRequest(contacts, hub.accessToken);
+        await makeHubspotRequest(ids, hub.accessToken);
     } catch (error) {
         if (error.code === 401) {
             const accessToken = await getHubspotAccessToken(hub.refreshToken);
@@ -207,14 +207,14 @@ async function createContactsInHubspot(hub, contacts, userId) {
     }
 }
 
-async function makeHubspotRequest(contacts, accessToken) {
+async function makeHubspotRequest(ids, accessToken) {
     const hubspotClient = new hubspot.Client({ accessToken: accessToken })
-
+    const contacts = await fetchContacts(ids);
     const [response] = await Promise.all(contacts.map(async (contact) => {
-        const obj = { properties: contact };
+        const data = formatContact(contact);
+        const obj = { properties: data };
         return await hubspotClient.crm.contacts.basicApi.create(obj);
     }));
-
     return response;
 }
 
@@ -237,39 +237,9 @@ async function zohoExport(req, res) {
     try {
         const { userId } = req;
         const { contactIds } = req.body;
-
-        const condition = [
-            {
-                $match: { 
-                    _id: { $in: contactIds.map(id => new mongoose.Types.ObjectId(id)) }
-                }
-            },
-            {
-                $lookup: {
-                    from: 'Cards',
-                    localField: 'cardId',
-                    foreignField: '_id',
-                    as: 'card'
-                }
-            },
-            {
-                $unwind: {
-                    path: '$card',
-                    preserveNullAndEmptyArrays: true 
-                }
-            },
-            {
-                $addFields: {
-                    card: {
-                        $ifNull: ['$card', null] 
-                    }
-                }
-            }
-        ];
-
         const [zoho, contacts] = await Promise.all([
             depManager.INTEGRATIONS.getIntegrationsModel().findOne({ userId, integrationId: "zoho_crm" }),
-            depManager.CONTACT.getContactModel().aggregate(condition)
+            fetchContacts(contactIds)
         ])
         const domain = zoho.server.split('.').filter(Boolean).pop();
         var result = await createContactsInZoho(zoho, domain, contacts, userId);
@@ -277,6 +247,39 @@ async function zohoExport(req, res) {
     } catch (error) {
         handleError(error, res);
     }
+}
+
+async function fetchContacts(contactIds){
+    const condition = [
+        {
+            $match: { 
+                _id: { $in: contactIds.map(id => new mongoose.Types.ObjectId(id)) }
+            }
+        },
+        {
+            $lookup: {
+                from: 'Cards',
+                localField: 'cardId',
+                foreignField: '_id',
+                as: 'card'
+            }
+        },
+        {
+            $unwind: {
+                path: '$card',
+                preserveNullAndEmptyArrays: true 
+            }
+        },
+        {
+            $addFields: {
+                card: {
+                    $ifNull: ['$card', null] 
+                }
+            }
+        }
+    ];
+    
+    return await depManager.CONTACT.getContactModel().aggregate(condition);
 }
 
 async function createContactsInZoho(zoho, domain, contacts, userId) {
@@ -312,36 +315,35 @@ async function createContactsInZoho(zoho, domain, contacts, userId) {
 }
 
 async function makeZohoRequest(zoho, domain, endpoint, data, headers) {
-
     const url = `https://www.zohoapis.${domain}/crm/v2/${endpoint}`;
-
-    const contactsToExport =  data.map((contact)=>{
-        if(contact.card){
-            return {
-                "First_Name": contact.card.name.firstName || '',
-                "Last_Name": contact.card.name.lastName || '',
-                "Email": contact.card.email || '',
-                "Phone": contact.card.phoneNumber || '',
-                "Address": `${contact.card.address.addressLine1 || ''}, ${contact.card.address.city || ''}, ${contact.card.address.state || ''}, ${contact.card.address.country || ''}, ${contact.card.address.pincode || ''}`,
-                "Company": contact.card.company.companyName || '',
-                "Title": contact.card.company.title || '',
-                "Description": contact.card.company.companyDescription || ''
-            }
-        }else{
-            return {
-                "First_Name": contact.details.name || '',
-                "Last_Name": contact.details.name || '',
-                "Email": contact.details.email || '',
-                "Phone": contact.details.phone || '',
-                "Address": contact.details.location || '',
-                "Company": contact.details.company || '',
-                "Website": contact.details.website || '',
-                "Title": contact.details.title || ''
-            }
-        }
-    })
-
+    const contactsToExport =  data.map((contact)=>{ return formatContact(contact); })
     return axios.post(url, {"data": contactsToExport}, { headers });
+}
+
+function formatContact(contact){
+    if(contact.card){
+        return {
+            "First_Name": contact.card.name.firstName || '',
+            "Last_Name": contact.card.name.lastName || '',
+            "Email": contact.card.email || '',
+            "Phone": contact.card.phoneNumber || '',
+            "Address": `${contact.card.address.addressLine1 || ''}, ${contact.card.address.city || ''}, ${contact.card.address.state || ''}, ${contact.card.address.country || ''}, ${contact.card.address.pincode || ''}`,
+            "Company": contact.card.company.companyName || '',
+            "Title": contact.card.company.title || '',
+            "Description": contact.card.company.companyDescription || ''
+        }
+    }else{
+        return {
+            "First_Name": contact.details.name || '',
+            "Last_Name": contact.details.name || '',
+            "Email": contact.details.email || '',
+            "Phone": contact.details.phone || '',
+            "Address": contact.details.location || '',
+            "Company": contact.details.company || '',
+            "Website": contact.details.website || '',
+            "Title": contact.details.title || ''
+        }
+    }
 }
 
 async function getZohoAccessToken(refreshToken, server) {
