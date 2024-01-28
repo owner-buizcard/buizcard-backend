@@ -202,7 +202,7 @@ async function createContactsInHubspot(hub, ids, userId) {
         if (error.code === 401) {
             const accessToken = await getHubspotAccessToken(hub.refreshToken);
             await Promise.all([
-                makeHubspotRequest(contacts, accessToken),
+                makeHubspotRequest(ids, accessToken),
                 depManager.INTEGRATIONS.getIntegrationsModel().updateOne({userId, integrationId: "hubspot_crm"}, {accessToken})
             ]);
         }
