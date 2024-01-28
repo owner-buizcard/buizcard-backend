@@ -79,11 +79,11 @@ async function excelExport(req, res) {
 async function spreadSheetExport(req, res) {
     try {
         const { userId } = req;
-        const { contacts } = req.body;
+        const { contactIds } = req.body;
 
         const ss = await depManager.INTEGRATIONS.getIntegrationsModel().findOne({ userId, integrationId: "spreadsheet" });
         
-        await createContactsInSpreadsheet(ss, contacts, userId)
+        await createContactsInSpreadsheet(ss, contactIds, userId)
 
         responser.success(res, true, "EXPORT_S003");
     } catch (error) {
@@ -103,23 +103,23 @@ async function getSpreadsheetAccessToken(refreshToken) {
     return response.data?.access_token;
 }
 
-async function createContactsInSpreadsheet(ss, contacts, userId) {
+async function createContactsInSpreadsheet(ss, contactIds, userId) {
 
     try {
-        await makeSpreadsheetRequest(contacts, ss.accessToken, ss.meta, userId);
+        await makeSpreadsheetRequest(contactIds, ss.accessToken, ss.meta, userId);
     } catch (error) {
         console.log(error);
         if (error.response && error.response.status === 401) {
             const accessToken = await getSpreadsheetAccessToken(ss.refreshToken);
             await Promise.all([
-                makeSpreadsheetRequest(contacts, accessToken, ss.meta),
+                makeSpreadsheetRequest(contactIds, accessToken, ss.meta),
                 depManager.INTEGRATIONS.getIntegrationsModel().updateOne({userId, integrationId: "spreadsheet"}, {accessToken})
             ]);
         }
     }
 }
 
-async function makeSpreadsheetRequest(contacts, accessToken, meta, userId) {
+async function makeSpreadsheetRequest(contactIds, accessToken, meta, userId) {
 
     let spreadsheetId;
     
@@ -128,6 +128,8 @@ async function makeSpreadsheetRequest(contacts, accessToken, meta, userId) {
     }else{
         spreadsheetId = await getSpreadsheetId(accessToken, userId);
     }
+
+    const contacts = await fetchContacts(contactIds);
 
     let values = contacts.map(contact => {return Object.values(contact);})
 
