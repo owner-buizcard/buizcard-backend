@@ -213,7 +213,7 @@ async function makeHubspotRequest(ids, accessToken) {
     const hubspotClient = new hubspot.Client({ accessToken: accessToken })
     const contacts = await fetchContacts(ids);
     const [response] = await Promise.all(contacts.map(async (contact) => {
-        const data = formatContact(contact);
+        const data = formatContactForhubspot(contact);
         const obj = { properties: data };
         return await hubspotClient.crm.contacts.basicApi.create(obj);
     }));
@@ -344,6 +344,33 @@ function formatContact(contact){
             "Company": contact.details.company || '',
             "Website": contact.details.website || '',
             "Title": contact.details.title || ''
+        }
+    }
+}
+
+
+function formatContactForhubspot(contact){
+    if(contact.card){
+        return {
+            "firstname": contact.card.name.firstName || '',
+            "lastname": contact.card.name.lastName || '',
+            "email": contact.card.email || '',
+            "phone": contact.card.phoneNumber || '',
+            "address": `${contact.card.address.addressLine1 || ''}, ${contact.card.address.city || ''}, ${contact.card.address.state || ''}, ${contact.card.address.country || ''}, ${contact.card.address.pincode || ''}`,
+            "company": contact.card.company.companyName || '',
+            "job_title": contact.card.company.title || '',
+            "description": contact.card.company.companyDescription || ''
+        }
+    }else{
+        return {
+            "firstname": contact.details.name || '',
+            "lastname": contact.details.name || '',
+            "email": contact.details.email || '',
+            "phone": contact.details.phone || '',
+            "address": contact.details.location || '',
+            "company": contact.details.company || '',
+            "website": contact.details.website || '',
+            "job_title": contact.details.title || ''
         }
     }
 }
