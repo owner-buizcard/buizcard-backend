@@ -193,7 +193,7 @@ async function connectSpreadSheet(req, res){
         ]);
 
         accessToken = generateTokens(user._id).accessToken;
-        res.redirect(`${process.env.DOMAIN}/i/spreadsheet/callback?token=${accessToken}`);
+        res.redirect(`${process.env.DOMAIN}/i/callback/spreadsheet?token=${accessToken}`);
     }catch(error){
         console.log(error);
         return responser.error(res, null, "GLOBAL_E001");
