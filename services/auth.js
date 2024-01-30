@@ -169,21 +169,23 @@ async function githubCallback(req, res){
 async function initApp(req, res){
     try{
         const userId = req.userId;
-        const user = depManager.USER.getUserModel().findById(userId);
+        
+        const user = await depManager.USER.getUserModel().findById(userId);
+        console.log(user);
 
         const data = {
             cardName: "Bizcard",
             name: {
-                firstName: user.firstName,
-                lastName: user.lastName
+                firstName: user?.firstName,
+                lastName: user?.lastName
             },
             company: {
-                companyName: user.company,
-                title: user.title
+                companyName: user?.company,
+                title: user?.title
             },
-            picture: user.picture,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
+            picture: user?.picture,
+            email: user?.email,
+            phoneNumber: user?.phoneNumber,
             created: Date.now(),
             createdBy: userId,
         }
@@ -202,11 +204,11 @@ async function initApp(req, res){
             depManager.CONFIG.getFieldTypesModel().find(),
             depManager.CONFIG.getConfigModel().find()
         ]);
-        
+
         const token = generateTokens(userId)
         const config = {fieldTypes, configs};
         
-        return responser.success(res, {user, contacts: [], cards: [card], config,  token}, "AUTH_S006")
+        return responser.success(res, {user: user.toJSON(), contacts: [], cards: [card.toJSON()], config,  token}, "AUTH_S006")
     }catch(error){
         console.error(error);
         return responser.success(res, null, "GLOBAL_E001");
