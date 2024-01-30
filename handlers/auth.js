@@ -28,6 +28,8 @@ const passportMiddleware = (req, res, next) => {
     next();
 };
 
+console.log(process.env.GITHUB_CALL_BACK);
+
 app.get("/ping", (req,res)=>res.send('DONE'));
 
 app.post("/auth/signup", processHandler(service.signupWithEmail));
