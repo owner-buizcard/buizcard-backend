@@ -197,8 +197,16 @@ async function initApp(req, res){
             card.save(),
             depManager.ANALYTICS.getAnalyticsModel().create({ cardId: card._id }),
         ]);
+
+        const [fieldTypes, configs] = await Promise.all([
+            depManager.CONFIG.getFieldTypesModel().find(),
+            depManager.CONFIG.getConfigModel().find()
+        ]);
         
-        return responser.success(res, card, "CARD_S001");
+        const token = generateTokens(userId)
+        const config = {fieldTypes, configs};
+        
+        return responser.success(res, {user, contacts: [], cards: [card], config,  token}, "AUTH_S006")
     }catch(error){
         console.error(error);
         return responser.success(res, null, "GLOBAL_E001");
