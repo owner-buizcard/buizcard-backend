@@ -155,7 +155,7 @@ async function githubCallback(req, res){
             provider: user.provider,
             providerId: user.id,
             created: Date.now(),
-            registrationStatus: 'registered'
+            registrationStatus: 'registered',
         }
 
         const createdUser = await depManager.USER.getUserModel().create(data);
@@ -166,9 +166,48 @@ async function githubCallback(req, res){
     res.redirect(`${process.env.DOMAIN}/auth/callback?token=${accessToken}`);
 }
 
+async function initApp(req, res){
+    try{
+        const userId = req.userId;
+        const user = depManager.USER.getUserModel().findById(userId);
+
+        const data = {
+            cardName: "Bizcard",
+            name: {
+                firstName: user.firstName,
+                lastName: user.lastName
+            },
+            company: {
+                companyName: user.company,
+                title: user.title
+            },
+            picture: user.picture,
+            email: user.email,
+            phoneNumber: user.phoneNumber,
+            created: Date.now(),
+            createdBy: userId,
+        }
+
+        const card = await depManager.CARD.getCardModel().create(data);
+
+        const cardLink = `${process.env.ORIGIN}/app/p/card/${card._id}`;
+        card.cardLink = cardLink;
+
+        await Promise.all([
+            card.save(),
+            depManager.ANALYTICS.getAnalyticsModel().create({ cardId: card._id }),
+        ]);
+        
+        return responser.success(res, card, "CARD_S001");
+    }catch(error){
+        console.error(error);
+        return responser.success(res, null, "GLOBAL_E001");
+    }
+}
+
 async function signupWithEmail(req, res){
     try{
-        const {email, password, firstName, lastName, company} = req.body;
+        const {email, password, firstName, lastName, company, title} = req.body;
         const UserModel = depManager.USER.getUserModel();
 
         const user = await UserModel.findOne({email: email});
@@ -187,7 +226,8 @@ async function signupWithEmail(req, res){
             password: hashedPassword,
             provider: "EMAIL",
             providerId: email,
-            registrationStatus: "registered"
+            registrationStatus: "registered",
+            title: title
         };
 
         const createdUser = await UserModel.create(data);
@@ -199,7 +239,6 @@ async function signupWithEmail(req, res){
         return responser.success(res, null, "AUTH_E001");
     }
 }
-
 
 async function loginWithEmail(req, res){
     try{
@@ -293,5 +332,6 @@ module.exports = {
     signupWithEmail,
     loginWithEmail,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    initApp
 }

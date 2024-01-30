@@ -30,6 +30,10 @@ const _userSchema = new Schema({
         type: Date, 
         default: null
     },
+    title: {
+        type: String,
+        default: null
+    },
     companyName: {
         type: String,
         default: null,

@@ -61,6 +61,10 @@ functions:
           method: GET
           cors: true
       - http:
+          path: /auth/init
+          method: POST
+          cors: true
+      - http:
           path: /auth/signup
           method: POST
           cors: true

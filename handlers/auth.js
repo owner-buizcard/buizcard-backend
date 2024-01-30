@@ -57,6 +57,7 @@ const { validateAccessToken } = require('../middlewares/authenticate');
 app.use(validateAccessToken);
 
 app.put("/auth/password/reset", processHandler(service.resetPassword));
+app.post("/auth/init", processHandler(service.initApp));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false
