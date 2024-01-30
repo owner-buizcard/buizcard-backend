@@ -35,17 +35,17 @@ app.post("/auth/login", processHandler(service.loginWithEmail));
 
 app.get("/auth/google", passportMiddleware, processHandler(service.googleAuth));
 app.get(
-    "/auth/google/callback",  
+    "/auth/callback/google",  
     passport.authenticate('google', { failureRedirect: `https://bizcard-spiderlingz.web.app/auth/callback` }), 
     processHandler(service.googleCallback));
 
     app.get("/auth/github", passportMiddleware, processHandler(service.githubAuth));
 app.get(
-    "/auth/github/callback",  
+    "/auth/callback/github",  
     passport.authenticate('github', { failureRedirect: `https://bizcard-spiderlingz.web.app/auth/callback` }), 
     processHandler(service.githubCallback));
 
-app.get("/auth/linkedin/callback", processHandler(service.linkedinAuth))
+app.get("/auth/callback/linkedin", processHandler(service.linkedinAuth))
 
 app.post("/auth/password/forgot", processHandler(service.forgotPassword));
 
