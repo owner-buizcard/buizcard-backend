@@ -8,12 +8,23 @@ async function createClone(req, res) {
 
         const card = await depManager.CARD.getCardModel().findById(cardId);
 
-        card = card.toJSON();
+        let clonedCard = card.toJSON();
+        const existingCards = await depManager.CARD.getCardModel().find({ cardName: new RegExp(`^${clonedCard.cardName} copy`, 'i') });
+        
+        if (existingCards.length > 0) {
+            const counts = existingCards.map(existingCard => {
+                const match = existingCard.cardName.match(/\((\d+)\)/);
+                return match ? parseInt(match[1]) : 0;
+            });
+            const highestCount = Math.max(...counts);
+            clonedCard.cardName = `${clonedCard.cardName} copy (${highestCount + 1})`;
+        } else {
+            clonedCard.cardName = `${clonedCard.cardName} copy`;
+        }
 
-        card.cardName = `${card.cardName} copy`;
-        card.created = Date.now();
+        clonedCard.created = Date.now();
 
-        const created = await depManager.CARD.getCardModel().create(card);
+        const created = await depManager.CARD.getCardModel().create(clonedCard);
 
         const cardLink = `${process.env.ORIGIN}/app/p/card/${created._id}`;
         created.cardLink = cardLink;
@@ -29,6 +40,7 @@ async function createClone(req, res) {
         return responser.success(res, null, "GLOBAL_E001");
     }
 }
+
 
 async function create(req, res) {
     try {
