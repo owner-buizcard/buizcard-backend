@@ -5,6 +5,7 @@
         "S003": "Card fetched successfully!",
         "S004": "User cards fetched successfully!",
         "S005": "Card deleted successfully!",
-        "S006": "Image uploaded successfully!"
+        "S006": "Image uploaded successfully!",
+        "S007": "Card copied successfully!"
     }
 }

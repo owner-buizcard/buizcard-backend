@@ -2,6 +2,34 @@ const depManager = require("../core/depManager");
 const responser = require("../core/responser");
 const { generatePreviewImage, uploadFile } = require("../core/utils");
 
+async function createClone(req, res) {
+    try {
+        const { cardId } = req.body;
+
+        const card = await depManager.CARD.getCardModel().findById(cardId);
+
+        card = card.toJSON();
+
+        card.cardName = `${card.cardName} copy`;
+        card.created = Date.now();
+
+        const created = await depManager.CARD.getCardModel().create(card);
+
+        const cardLink = `${process.env.ORIGIN}/app/p/card/${created._id}`;
+        created.cardLink = cardLink;
+
+        await Promise.all([
+            created.save(),
+            depManager.ANALYTICS.getAnalyticsModel().create({ cardId: created._id }),
+        ]);
+
+        return responser.success(res, created, "CARD_S007");
+    } catch (error) {
+        console.error(error);
+        return responser.success(res, null, "GLOBAL_E001");
+    }
+}
+
 async function create(req, res) {
     try {
         const userId = req.userId;
@@ -133,4 +161,5 @@ module.exports = {
     get,
     getUserCards,
     deleteCard,
+    createClone
 };

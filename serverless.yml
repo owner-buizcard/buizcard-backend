@@ -137,6 +137,10 @@ functions:
           method: POST
           cors: true
       - http:
+          path: /card/clone
+          method: POST
+          cors: true
+      - http:
           path: /card-image
           method: POST
           cors: true

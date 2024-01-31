@@ -23,6 +23,7 @@ app.get("/card-preview", processHandler(service.get));
 app.use(validateAccessToken);
 
 app.post("/card", processHandler(service.create));
+app.post("/card/clone", processHandler(service.createClone));
 app.put("/card", processHandler(service.update));
 app.get("/card", processHandler(service.get));
 app.get("/user-cards", processHandler(service.getUserCards));
