@@ -9,6 +9,8 @@ async function createClone(req, res) {
         const card = await depManager.CARD.getCardModel().findById(cardId);
 
         let clonedCard = card.toJSON();
+        delete clonedCard._id;
+        
         const existingCards = await depManager.CARD.getCardModel().find({ cardName: new RegExp(`^${clonedCard.cardName} copy`, 'i') });
         
         if (existingCards.length > 0) {
