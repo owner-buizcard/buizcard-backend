@@ -296,7 +296,7 @@ async function forgotPassword(req, res, next){
 
         const renderedTemplate = htmlTemplate.replace('[User]', `${user?.firstName} ${user.lastName}`).replace('[RESET_LINK]', resetLink);
         
-        await sendEmail(user.email, "Password Reset", renderedTemplate);
+        await sendEmail(user.email, "Password Reset", {template: renderedTemplate});
 
         return responser.success(res, true, "AUTH_S004");
 

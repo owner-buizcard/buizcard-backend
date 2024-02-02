@@ -276,7 +276,7 @@ module.exports.sendWhatsappMessage=async()=>{
   });
 }
 
-module.exports.sendEmail=async(toEmail, subject, renderedTemplate)=>{
+module.exports.sendEmail=async(toEmail, subject, {template, bcc, content})=>{
 
   const sgMail = require('@sendgrid/mail')
   sgMail.setApiKey(process.env.EMAIL_API_KEY)
@@ -285,12 +285,13 @@ module.exports.sendEmail=async(toEmail, subject, renderedTemplate)=>{
 
     const msg = {
       to: toEmail,
+      bcc: bcc,
       from: {
         name: process.env.FROM_EMAIL_NAME,
         email: process.env.FROM_EMAIL
       },
       subject: subject,
-      html: renderedTemplate
+      html: template
     }
 
     await sgMail.send(msg);

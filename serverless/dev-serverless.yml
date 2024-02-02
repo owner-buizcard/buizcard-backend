@@ -172,6 +172,10 @@ functions:
           method: POST
           cors: true
       - http:
+          path: /contact/mail
+          method: POST
+          cors: true
+      - http:
           path: /contact
           method: POST
           cors: true

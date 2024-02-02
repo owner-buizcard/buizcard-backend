@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
+const { sendEmail } = require("../core/utils");
 
 async function create(req, res) {
     try {
@@ -143,16 +144,16 @@ async function deleteContact(req, res){
     }
 }
 
-// async function addTags(req, res){
-//     try{
-//         const contactId = req.query.contactId
-//         const { tags } = req.body;
-//         const updated = await depManager.CONTACT.getContactModel().findOneAndUpdate({_id: contactId}, {tags: tags}, { new: true });
-//         return responser.success(res, updated, "CONTACT_S007");
-//     }catch(error){
-//         return responser.success(res, null, "GLOBAL_E001");
-//     }
-// }
+async function sendPromotionalMail(req, res){
+    try{
+        const { emails, subject, content } = req.body;
+        const bccRecipients = emails.slice(1);
+        await sendEmail(emails[0], subject, {content, bcc: bccRecipients});
+        return responser.success(res, true, "CONTACT_S008");
+    }catch(error){
+        return responser.success(res, null, "GLOBAL_E001");
+    }
+}
 
 async function updateContact(req, res){
     try{
@@ -171,6 +172,7 @@ module.exports = {
     createRequest,
     connectForm,
     get,
+    sendPromotionalMail,
     getUserContacts,
     deleteContact,
     updateContact
