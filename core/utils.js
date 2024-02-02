@@ -285,13 +285,21 @@ module.exports.sendEmail=async(toEmail, subject, {template, bcc, content})=>{
 
     const msg = {
       to: toEmail,
-      bcc: bcc,
       from: {
         name: process.env.FROM_EMAIL_NAME,
         email: process.env.FROM_EMAIL
       },
-      subject: subject,
-      html: template
+      subject: subject
+    }
+
+    if (bcc) {
+      msg.bcc = bcc;
+    }
+    if (template) {
+      msg.html = template;
+    }
+    if (content) {
+      msg.text = content;
     }
 
     await sgMail.send(msg);
