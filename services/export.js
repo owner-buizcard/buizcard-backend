@@ -252,12 +252,17 @@ async function zohoExport(req, res) {
 }
 
 async function fetchContacts(contactIds){
-    const condition = [
-        {
+
+    let condition = [];
+
+    if (contactIds.length > 0) {
+        condition.push({
             $match: { 
                 _id: { $in: contactIds.map(id => new mongoose.Types.ObjectId(id)) }
             }
-        },
+        });
+    }
+    condition.push(
         {
             $lookup: {
                 from: 'Cards',
@@ -279,7 +284,7 @@ async function fetchContacts(contactIds){
                 }
             }
         }
-    ];
+    );
     
     return await depManager.CONTACT.getContactModel().aggregate(condition);
 }
