@@ -86,6 +86,10 @@ const _userSchema = new Schema({
         type: String,
         default: null
     },
+    enableWhatsapp: {
+        type: Boolean,
+        default: true
+    },
     telegramNumber: {
         type: String,
         default: null

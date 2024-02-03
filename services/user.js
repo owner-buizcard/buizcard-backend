@@ -23,10 +23,13 @@ async function update(req, res){
             return responser.success(res, null, "USER_E002");
         }
 
-        const {firstName, designation, additionalEmail, additionalPhoneNumber, whatsappNumber, companyName, companyWebsite, gender, dateOfBirth, address, lastName, picture, locale, countryCode, dateFormat, defaultCurrency, phoneNumber} = req.body;
+        const {firstName, designation, additionalEmail, additionalPhoneNumber, whatsappNumber, enableWhatsapp, companyName, companyWebsite, gender, dateOfBirth, address, lastName, picture, locale, countryCode, dateFormat, defaultCurrency, phoneNumber} = req.body;
 
         if(firstName){
             user.firstName = firstName;
+        }
+        if(enableWhatsapp){
+            user.enableWhatsapp = enableWhatsapp;
         }
         if(lastName){
             user.lastName = lastName;
