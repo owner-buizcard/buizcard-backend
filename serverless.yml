@@ -1,4 +1,4 @@
-service: bizcard-backend
+service: bizcard-api
 frameworkVersion: '3'
 
 plugins:
