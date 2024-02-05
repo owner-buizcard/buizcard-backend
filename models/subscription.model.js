@@ -1,6 +1,25 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const _planSchema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  amount: {
+    type: String,
+    required: true
+  },
+  amount_string: {
+    type: String,
+    required: true
+  }
+})
+
 const _subscriptionSchema = new Schema({
     userId: {
       type: Schema.ObjectId,
@@ -30,10 +49,16 @@ const _subscriptionSchema = new Schema({
     endAt: { type: Date, required: true }
 })
 
-const getSubscriptionModel = () => {
-    return mongoose.model("Subscription", _subscriptionSchema, "Subscription");
+const getPlanModel = () => {
+    return mongoose.model("Plans", _planSchema, "Plans");
 };
 
+const getSubscriptionModel = () => {
+  return mongoose.model("Subscription", _subscriptionSchema, "Subscription");
+};
+
+
 module.exports = {
-  getSubscriptionModel
+  getSubscriptionModel,
+  getPlanModel
 };

@@ -1,13 +1,17 @@
-const { razorpay } = require("../core/utils");
+const { razorpay, generateRandomString } = require("../core/utils");
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
 
 async function createOrder(req, res){
 
+  const { amount } = req.body;
+
+  const uniqueReceipt = `receipt#${Date.now()}-${generateRandomString(8)}`;
+
   const options = {
-    amount: 100,
+    amount: amount,
     currency: "INR",
-    receipt: "receipt#1",
+    receipt: uniqueReceipt,
     partial_payment: false,
     payment_capture: 1
   };
