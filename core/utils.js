@@ -264,16 +264,16 @@ module.exports.resizedImage = async (input) => {
 }
 
 module.exports.sendWhatsappMessage=async()=>{
-  const accountSid = process.env.TWILLIO_SID;
-  const authToken = process.env.TWILLIO_TOKEN;
-  const client = require('twilio')(accountSid, authToken);
+  // const accountSid = process.env.TWILLIO_SID;
+  // const authToken = process.env.TWILLIO_TOKEN;
+  // const client = require('twilio')(accountSid, authToken);
 
-  await client.messages
-    .create({
-        body: 'Your appointment is coming up on July 21 at 3PM',
-        from: 'whatsapp:+14155238886',
-        to: 'whatsapp:+918056384773'
-  });
+  // await client.messages
+  //   .create({
+  //       body: 'Your appointment is coming up on July 21 at 3PM',
+  //       from: 'whatsapp:+14155238886',
+  //       to: 'whatsapp:+918056384773'
+  // });
 }
 
 module.exports.sendEmail=async(toEmail, subject, {template, bcc, content})=>{

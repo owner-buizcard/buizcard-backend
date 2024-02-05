@@ -2,7 +2,7 @@ const { default: axios } = require("axios");
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
 const hubspot = require('@hubspot/api-client')
-const Excel = require('exceljs');
+// const Excel = require('exceljs');
 const fs = require('fs');
 const fsPromise = require('fs').promises;
 const { default: mongoose } = require("mongoose");
@@ -54,22 +54,22 @@ async function excelExport(req, res) {
             ...values
         ]
 
-        const workbook = new Excel.Workbook();
-        const worksheet = workbook.addWorksheet('Contacts');
+        // const workbook = new Excel.Workbook();
+        // const worksheet = workbook.addWorksheet('Contacts');
 
-        values.forEach((row) => { worksheet.addRow(row); });
+        // values.forEach((row) => { worksheet.addRow(row); });
 
-        const filePath = `Bizcard.xlsx`;
-        await workbook.xlsx.writeFile(filePath);
+        // const filePath = `Bizcard.xlsx`;
+        // await workbook.xlsx.writeFile(filePath);
 
-        const mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        const fileData = fs.readFileSync(filePath);
+        // const mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        // const fileData = fs.readFileSync(filePath);
 
-        const fileUrl = await uploadObjectToS3Bucket(`${userId}/bizcard-contacts.xls`, mimetype, fileData);
-        fs.unlinkSync(filePath);
-        const file_url = fileUrl.substring(0, fileUrl.indexOf('?'));
+        // const fileUrl = await uploadObjectToS3Bucket(`${userId}/bizcard-contacts.xls`, mimetype, fileData);
+        // fs.unlinkSync(filePath);
+        // const file_url = fileUrl.substring(0, fileUrl.indexOf('?'));
 
-        responser.success(res, file_url, "EXPORT_S004");
+        // responser.success(res, file_url, "EXPORT_S004");
     } catch (error) {
         handleError(error, res);
     }
