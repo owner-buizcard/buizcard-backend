@@ -29,9 +29,7 @@ async function subscribe(req, res) {
   try {
     const userId = req.userId;
     const user = await depManager.USER.getUserModel().findById(userId);
-
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan } = req.body;
-
     const currentDate = new Date();
     const startAt = user.subscription ? user.subscription + 1 : currentDate.getTime();
 
