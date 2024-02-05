@@ -312,7 +312,7 @@ module.exports.razorpay = ()=>{
   const Razorpay = require('razorpay');
 
   return new Razorpay({
-    key_id: "rzp_live_v5uEoz77A8mTwT",
-    key_secret: "Tqft3eOI3Nd2pO88LZ38Sfs1",
+    key_id: process.env.RAZOR_PAY_ID,
+    key_secret: process.env.RAZOR_PAY_SECRET
   });
 } 

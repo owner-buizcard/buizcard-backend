@@ -41,6 +41,8 @@ provider:
     DOMAIN: ${file(./config/config.${self:custom.currentStage}.json):DOMAIN}
     ORIGIN: ${file(./config/config.${self:custom.currentStage}.json):ORIGIN}
     S3_BUCKET_NAME: ${file(./config/config.${self:custom.currentStage}.json):S3_BUCKET_NAME}
+    RAZOR_PAY_ID: ${file(./config/config.${self:custom.currentStage}.json):RAZOR_PAY_ID}
+    RAZOR_PAY_SECRET: ${file(./config/config.${self:custom.currentStage}.json):RAZOR_PAY_SECRET}
 
 custom:
   prune:
