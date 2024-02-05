@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 
 const processHandler = require("../core/processHandler");
 
-const service = require('../services/subscription');
+const service = require('../services/subscribe');
 const cors_origin = require("../core/cors_origin");
 // const { validateAccessToken } = require('../middlewares/authenticate');
 
@@ -15,10 +15,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors_origin());
 
+
 // app.use(validateAccessToken);
 
-app.post("/subscription-plan", processHandler(service.createPlan));
-app.get("/subscription-plan", processHandler(service.getPlans));
+app.post("/order", processHandler(service.createOrder));
+app.post("/subscribe", processHandler(service.createOrder));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false

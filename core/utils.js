@@ -307,3 +307,12 @@ module.exports.sendEmail=async(toEmail, subject, {template, bcc, content})=>{
     console.log(e.toString());
   }
 }
+
+module.exports.razorpay = ()=>{
+  const Razorpay = require('razorpay');
+
+  return new Razorpay({
+    key_id: "rzp_live_v5uEoz77A8mTwT",
+    key_secret: "Tqft3eOI3Nd2pO88LZ38Sfs1",
+  });
+} 

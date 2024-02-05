@@ -311,16 +311,16 @@ functions:
           path: /whatsapp/alert
           method: POST
           cors: true
-  subscription:
-    handler: ./handlers/subscription.handler
+  subscribe:
+    handler: ./handlers/subscribe.handler
     events:
       - http:
-          path: /subscription-plan
+          path: /order
           method: POST
           cors: true
       - http:
-          path: /subscription-plan
-          method: GET
+          path: /subscribe
+          method: POST
           cors: true
 
 

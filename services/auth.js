@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const { default: axios } = require('axios');
 const { sendEmail } = require('../core/utils');
+const { createCustomer } = require('./subscription');
 
 async function githubAuth(req, res, next){
     const passport = req.passport;
@@ -205,6 +206,8 @@ async function initApp(req, res){
             depManager.CONFIG.getConfigModel().find()
         ]);
 
+        
+
         const token = generateTokens(userId)
         const config = {fieldTypes, configs};
         
@@ -240,11 +243,17 @@ async function signupWithEmail(req, res){
             title: title
         };
 
-        const createdUser = await UserModel.create(data);
-        const token = generateTokens(createdUser._id);
+        const [ createdUser, customer ] = await Promise.all([
+            UserModel.create(data),
+            createCustomer(data)
+        ]);
 
-        return responser.success(res, {createdUser, token}, "AUTH_S002");
+        createdUser.razorpayId = customer.id;
+        await createdUser.save();
+
+        const token = generateTokens(createdUser._id);
         
+        return responser.success(res, {createdUser, token}, "AUTH_S002");
     }catch(error){
         return responser.success(res, null, "AUTH_E001");
     }
