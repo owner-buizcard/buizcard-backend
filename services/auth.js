@@ -6,7 +6,6 @@ const path = require('path');
 const fs = require('fs');
 const { default: axios } = require('axios');
 const { sendEmail } = require('../core/utils');
-const { createCustomer } = require('./subscription');
 
 async function githubAuth(req, res, next){
     const passport = req.passport;
@@ -243,13 +242,7 @@ async function signupWithEmail(req, res){
             title: title
         };
 
-        const [ createdUser, customer ] = await Promise.all([
-            UserModel.create(data),
-            createCustomer(data)
-        ]);
-
-        createdUser.razorpayId = customer.id;
-        await createdUser.save();
+        const createdUser = await UserModel.create(data);
 
         const token = generateTokens(createdUser._id);
         
