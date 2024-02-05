@@ -29,6 +29,7 @@
     "passport-oauth": "^1.0.0",
     "path": "^0.12.7",
     "qrcode": "^1.5.3",
+    "razorpay": "^2.9.2",
     "serverless-http": "^3.2.0",
     "twilio": "^4.20.0"
   },
