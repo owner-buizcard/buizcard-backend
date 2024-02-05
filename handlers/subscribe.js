@@ -19,7 +19,7 @@ app.use(cors_origin());
 // app.use(validateAccessToken);
 
 app.post("/order", processHandler(service.createOrder));
-app.post("/subscribe", processHandler(service.createOrder));
+app.post("/subscribe", processHandler(service.subscribe));
 
 module.exports.handler = serverless(app, {
     callbackWaitsForEmptyEventLoop: false
