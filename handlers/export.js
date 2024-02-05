@@ -10,7 +10,6 @@ const cors_origin = require("../core/cors_origin");
 const { validateAccessToken } = require('../middlewares/authenticate');
 
 const app = express();
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors_origin());
