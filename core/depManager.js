@@ -9,6 +9,7 @@ const CARD_LOG = require("../models/card-log.model");
 const VIRTUAL_BACKGROUND = require("../models/virtual-background.model");
 const INTEGRATIONS = require("../models/integrations.model");
 const SUBSCRIPTION = require("../models/subscription.model");
+const SUPPORT = require("../models/support.model");
 
 const depManager = {
   // DB
@@ -21,7 +22,8 @@ const depManager = {
   CARD_LOG,
   VIRTUAL_BACKGROUND,
   INTEGRATIONS,
-  SUBSCRIPTION
+  SUBSCRIPTION,
+  SUPPORT
 };
 
 module.exports = depManager;

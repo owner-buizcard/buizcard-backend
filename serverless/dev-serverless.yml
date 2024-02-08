@@ -324,5 +324,12 @@ functions:
           path: /subscribe
           method: POST
           cors: true
+  support:
+    handler: ./handlers/support.handler
+    events:
+      - http:
+          path: /support
+          method: POST
+          cors: true
 
 

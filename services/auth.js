@@ -119,8 +119,6 @@ async function googleCallback(req, res){
 
         const createdUser = await depManager.USER.getUserModel().create(data);
 
-        console.log(createdUser);
-
         accessToken = generateTokens(createdUser._id).accessToken;
     }
 
