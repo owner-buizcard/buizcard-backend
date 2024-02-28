@@ -50,8 +50,8 @@ const _subscriptionSchema = new Schema({
       type: Schema.ObjectId,
       required: true
     },
-    planId: {
-      type: String,
+    plan: {
+      type: Object,
       required: true
     },
     razorpay: {

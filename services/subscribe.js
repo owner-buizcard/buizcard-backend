@@ -28,7 +28,7 @@ async function createOrder(req, res){
 async function subscribe(req, res) {
   try {
     const userId = req.userId;
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, planId, type } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan } = req.body;
 
     const user = await depManager.USER.getUserModel().findById(userId);
 
@@ -39,7 +39,7 @@ async function subscribe(req, res) {
 
     const data = {
       userId,
-      planId: planId,
+      plan,
       startAt,
       endAt,
       razorpay: {
