@@ -10,7 +10,7 @@ async function createOrder(req, res){
 
   const options = {
     amount: amount,
-    currency: "INR",
+    currency: "USD",
     receipt: uniqueReceipt,
     partial_payment: false,
     payment_capture: 1
@@ -28,18 +28,20 @@ async function createOrder(req, res){
 async function subscribe(req, res) {
   try {
     const userId = req.userId;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, planId, type } = req.body;
+
     const user = await depManager.USER.getUserModel().findById(userId);
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan } = req.body;
+
     const currentDate = new Date();
     const startAt = user.subscription ? user.subscription + 1 : currentDate.getTime();
 
-    const endAt = getEndAtDate(currentDate, plan);
+    const endAt = getEndAtDate(currentDate, type);
 
     const data = {
       userId,
+      planId: planId,
       startAt,
       endAt,
-      planId: plan.id,
       razorpay: {
         orderId: razorpay_order_id,
         paymentId: razorpay_payment_id,
@@ -61,8 +63,8 @@ async function subscribe(req, res) {
   }
 }
 
-function getEndAtDate(currentDate, plan) {
-  const daysToAdd = plan.type === "M" ? 30 : 365;
+function getEndAtDate(currentDate, type) {
+  const daysToAdd = type === "m" ? 30 : 365;
   const endAt = new Date(currentDate);
   endAt.setDate(currentDate.getDate() + daysToAdd);
   return endAt.getTime();
