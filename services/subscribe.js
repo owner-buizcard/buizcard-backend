@@ -4,13 +4,13 @@ const responser = require("../core/responser");
 
 async function createOrder(req, res){
 
-  const { amount } = req.body;
+  const { amount, currency } = req.body;
 
   const uniqueReceipt = `receipt#${Date.now()}-${generateRandomString(8)}`;
 
   const options = {
     amount: amount,
-    currency: "USD",
+    currency: currency ?? "INR",
     receipt: uniqueReceipt,
     partial_payment: false,
     payment_capture: 1
