@@ -35,7 +35,7 @@ async function subscribe(req, res) {
     const currentDate = new Date();
     const startAt = user.subscription ? user.subscription + 1 : currentDate.getTime();
 
-    const endAt = getEndAtDate(currentDate, type);
+    const endAt = getEndAtDate(currentDate, plan.type);
 
     const data = {
       userId,
