@@ -10,12 +10,37 @@ const _planSchema = new Schema({
     type: String,
     required: true
   },
-  amount: {
+  features: {
+    type: Object,
+    required: true
+  },
+  offer: {
     type: String,
     required: true
   },
-  amount_string: {
-    type: String,
+  price: {
+    type: {
+      m: {
+        amount: {
+          type: String,
+          required: true
+        },
+        amount_string: {
+          type: String,
+          required: true
+        }
+      },
+      y: {
+        amount: {
+          type: String,
+          required: true
+        },
+        amount_string: {
+          type: String,
+          required: true
+        }
+      }
+    },
     required: true
   }
 })
