@@ -11,6 +11,7 @@ const SIGNATURE = require("./signature.json");
 const VBG = require("./virtual-background.json");
 const INTEGRATION = require("./integration.json");
 const EXPORT = require("./export.json");
+const SUBSCRIPTION = require('./subscription.json');
 
 module.exports = {
     AUTH,
@@ -24,5 +25,6 @@ module.exports = {
     SIGNATURE,
     VBG,
     INTEGRATION,
-    EXPORT
+    EXPORT,
+    SUBSCRIPTION
 };

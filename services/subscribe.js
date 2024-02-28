@@ -18,7 +18,7 @@ async function createOrder(req, res){
 
   try {
     const order = await razorpay().orders.create(options);
-    return responser.success(res, order, "SIGNATURE_S001");
+    return responser.success(res, order, "SUBSCRIPTION_S002");
   } catch (error) {
     console.log(error);
     return responser.success(res, null, "GLOBAL_E001");
@@ -56,7 +56,7 @@ async function subscribe(req, res) {
       user.save()
     ]);
 
-    return responser.success(res, updated, "SIGNATURE_S001");
+    return responser.success(res, updated, "SUBSCRIPTION_S001");
   } catch (error) {
     console.error(error);
     return responser.success(res, null, "GLOBAL_E001");
