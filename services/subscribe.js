@@ -34,7 +34,6 @@ async function subscribe(req, res) {
 
     const currentDate = new Date();
     const startAt = user.subscription!=null ? user.subscription + 1 : currentDate.getTime();
-
     const endAt = getEndAtDate(startAt, plan.type);
 
     const data = {
@@ -66,7 +65,7 @@ async function subscribe(req, res) {
 function getEndAtDate(currentDate, type) {
   const daysToAdd = type === "m" ? 30 : 365;
   const endAt = new Date(currentDate);
-  endAt.setDate(endAt + daysToAdd);
+  endAt.setDate(endAt.getDate() + daysToAdd);
   return endAt.getTime();
 }
 
