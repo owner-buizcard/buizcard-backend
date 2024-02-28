@@ -33,9 +33,9 @@ async function subscribe(req, res) {
     const user = await depManager.USER.getUserModel().findById(userId);
 
     const currentDate = new Date();
-    const startAt = user.subscription ? user.subscription + 1 : currentDate.getTime();
+    const startAt = user.subscription!=null ? user.subscription + 1 : currentDate.getTime();
 
-    const endAt = getEndAtDate(currentDate, plan.type);
+    const endAt = getEndAtDate(startAt, plan.type);
 
     const data = {
       userId,
