@@ -66,7 +66,7 @@ async function subscribe(req, res) {
 function getEndAtDate(currentDate, type) {
   const daysToAdd = type === "m" ? 30 : 365;
   const endAt = new Date(currentDate);
-  endAt.setDate(currentDate.getDate() + daysToAdd);
+  endAt.setDate(endAt + daysToAdd);
   return endAt.getTime();
 }
 
