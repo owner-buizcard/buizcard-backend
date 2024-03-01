@@ -151,6 +151,10 @@ const _userSchema = new Schema({
         type: Boolean,
         default: true
     },
+    personalizedLink: {
+        type: String,
+        default: null
+    },
     lastLogin: { type: Date, default: Date.now },
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now },

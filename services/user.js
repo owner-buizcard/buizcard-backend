@@ -36,6 +36,18 @@ async function updateBranding(req, res){
     }
 }
 
+async function updatePersonalizedLink(req, res){
+    try{
+        const userId = req.userId;
+        const {value} = req.query;
+        await depManager.USER.getUserModel().updateOne({_id: userId}, {personalizedLink: value});
+        return responser.success(res, true, "USER_S003");
+    }catch(e){
+        console.log(error);
+        return responser.success(res, null, "USER_E001");
+    }
+}
+
 async function update(req, res){
     try{
 
@@ -118,5 +130,6 @@ module.exports = {
     update,
     deleteAccount,
     updateFollowUp,
-    updateBranding
+    updateBranding,
+    updatePersonalizedLink
 }
