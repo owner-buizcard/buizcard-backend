@@ -16,7 +16,7 @@ async function updateFollowUp(req, res){
     try{
         const userId = req.userId;
         const {value} = req.query;
-        await depManager.USER.getUserModel().updateOne({_id: userId}, {followUp: follow_up});
+        await depManager.USER.getUserModel().updateOne({_id: userId}, {followUp: value});
         return responser.success(res, true, "USER_S003");
     }catch(e){
         console.log(error);
