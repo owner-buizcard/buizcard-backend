@@ -24,6 +24,18 @@ async function updateFollowUp(req, res){
     }
 }
 
+async function updateBranding(req, res){
+    try{
+        const userId = req.userId;
+        const {value} = req.query;
+        await depManager.USER.getUserModel().updateOne({_id: userId}, {branding: value});
+        return responser.success(res, true, "USER_S003");
+    }catch(e){
+        console.log(error);
+        return responser.success(res, null, "USER_E001");
+    }
+}
+
 async function update(req, res){
     try{
 
@@ -105,5 +117,6 @@ async function update(req, res){
 module.exports = {
     update,
     deleteAccount,
-    updateFollowUp
+    updateFollowUp,
+    updateBranding
 }

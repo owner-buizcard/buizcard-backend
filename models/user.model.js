@@ -147,6 +147,10 @@ const _userSchema = new Schema({
         type: Boolean,
         default: false
     },
+    branding: {
+        type: Boolean,
+        default: true
+    },
     lastLogin: { type: Date, default: Date.now },
     created: { type: Date, default: Date.now },
     updated: { type: Date, default: Date.now },

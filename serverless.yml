@@ -132,6 +132,10 @@ functions:
           method: PUT
           cors: true
       - http:
+          path: /branding
+          method: PUT
+          cors: true
+      - http:
           path: /me
           method: DELETE
           cors: true
