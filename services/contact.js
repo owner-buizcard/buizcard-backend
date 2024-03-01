@@ -6,7 +6,7 @@ const { sendEmail } = require("../core/utils");
 async function create(req, res) {
     try {
         const { userId } = req;
-        const { cardId, type } = req.body;
+        const { cardId, ownerId, type } = req.body;
 
         const existing = await depManager.CONTACT.getContactModel().findOne({ userId, cardId });
 
@@ -14,9 +14,53 @@ async function create(req, res) {
 
         const contact = await depManager.CONTACT.getContactModel().create({ userId, cardId, type, connectedAt: Date.now() });
 
+        sendFollowUp(userId, ownerId);
+
         return responser.success(res, contact, "CONTACT_S001");
     } catch (error) {
         return responser.error(res, "Error creating contacts", "CONTACT_E001");
+    }
+}
+
+async function sendFollowUp(userId, ownerId) {
+    try{
+
+        const users = await depManager.USER.getUserModel().find({
+            _id: { $in: [userId, ownerId] }
+          });
+
+        const user = users.find((e)=>e.id==userId);
+        const owner = users.find((e)=>e.id==ownerId);
+
+        if(!owner.followUp){
+            return;
+        }
+
+        sendEmail(
+            user.email, 
+            `Introducing ${owner.firstName??''} ${owner.lastName??''} - Let's Connect!`, 
+            {
+                content: `Dear ${user.firstName},
+
+                I hope this email finds you well.
+                
+                My name is ${owner.firstName??''} ${owner.lastName??''} and I am the ${owner.designation} at ${owner.companyName}. We recently connected through Bizcard and I wanted to take a moment to introduce myself and express my gratitude for connecting.
+                
+                I believe that there may be opportunities for us to collaborate or support each other in our respective endeavors. Whether it's exploring potential partnerships, sharing insights, or simply exchanging ideas, I am eager to learn more about your work and how we might be able to assist you.
+                
+                I have attached my contact information below for your reference. Please feel free to reach out at any time to discuss further. Additionally, I would love to hear more about your work and how we might be able to support each other.
+                
+                Thank you once again for connecting, and I look forward to the possibility of collaborating with you in the future.
+                
+                Best regards,
+                ${owner.firstName??''} ${owner.lastName??''}
+                ${owner.designation}
+                ${owner.companyName}
+                ${owner.phoneNumber}`
+            }
+        )
+    }catch(e){
+        console.log(e);
     }
 }
 

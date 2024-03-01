@@ -12,6 +12,18 @@ async function deleteAccount(req, res){
     }
 }
 
+async function updateFollowUp(req, res){
+    try{
+        const userId = req.userId;
+        const {value} = req.query;
+        await depManager.USER.getUserModel().updateOne({_id: userId}, {followUp: follow_up});
+        return responser.success(res, true, "USER_S003");
+    }catch(e){
+        console.log(error);
+        return responser.success(res, null, "USER_E001");
+    }
+}
+
 async function update(req, res){
     try{
 
@@ -92,5 +104,6 @@ async function update(req, res){
 
 module.exports = {
     update,
-    deleteAccount
+    deleteAccount,
+    updateFollowUp
 }

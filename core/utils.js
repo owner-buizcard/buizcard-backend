@@ -301,7 +301,7 @@ module.exports.sendEmail=async(toEmail, subject, {template, bcc, content})=>{
     if (content) {
       msg.text = content;
     }
-
+    
     await sgMail.send(msg);
   }catch(e){
     console.log(e.toString());

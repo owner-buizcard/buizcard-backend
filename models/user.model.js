@@ -1,3 +1,4 @@
+const { bool } = require("joi");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -141,6 +142,10 @@ const _userSchema = new Schema({
     subscription: {
         type: Number,
         default: null
+    },
+    followUp: {
+        type: Boolean,
+        default: false
     },
     lastLogin: { type: Date, default: Date.now },
     created: { type: Date, default: Date.now },
