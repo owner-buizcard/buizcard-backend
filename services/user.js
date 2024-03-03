@@ -48,6 +48,21 @@ async function updatePersonalizedLink(req, res){
     }
 }
 
+async function checkDomainIsAvailable(req, res){
+    try{
+        const { domain } = req.body;
+        if(domain.length<5){
+            return responser.success(res, false, "USER_E004");
+        }
+        const data = await depManager.USER.getUserModel().findOne({personalizedLink: domain});
+        const isAvailable = (data==null);
+        return responser.success(res, isAvailable, isAvailable ? "USER_S004" : "USER_E003");
+    }catch(e){
+        console.log(error);
+        return responser.success(res, null, "USER_E001");
+    }
+}
+
 async function update(req, res){
     try{
 
@@ -131,5 +146,6 @@ module.exports = {
     deleteAccount,
     updateFollowUp,
     updateBranding,
-    updatePersonalizedLink
+    updatePersonalizedLink,
+    checkDomainIsAvailable
 }

@@ -138,6 +138,10 @@ functions:
       - http:
           path: /personalizedLink
           method: PUT
+          cors: true      
+      - http:
+          path: /personalizedLink/check
+          method: POST
           cors: true
       - http:
           path: /me

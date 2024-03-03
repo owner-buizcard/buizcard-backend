@@ -21,6 +21,7 @@ app.put("/me", processHandler(service.update));
 app.put("/followUp", processHandler(service.updateFollowUp));
 app.put("/branding", processHandler(service.updateBranding));
 app.put("/personalizedLink", processHandler(service.updatePersonalizedLink));
+app.post("/personalizedLink/check", processHandler(service.checkDomainIsAvailable));
 app.delete("/me", processHandler(service.deleteAccount));
 
 module.exports.handler = serverless(app, {
