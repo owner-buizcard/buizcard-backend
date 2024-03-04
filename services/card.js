@@ -105,6 +105,8 @@ async function update(req, res) {
             "company",
             "picture",
             "logo",
+            "theme",
+            "design",
             "banner",
             "fields",
             "qr",
