@@ -1,5 +1,6 @@
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
+const { verifyToken } = require("./token");
 
 async function deleteAccount(req, res){
     try{
@@ -18,6 +19,33 @@ async function updateFollowUp(req, res){
         const {value} = req.query;
         await depManager.USER.getUserModel().updateOne({_id: userId}, {followUp: value});
         return responser.success(res, true, "USER_S003");
+    }catch(e){
+        console.log(error);
+        return responser.success(res, null, "USER_E001");
+    }
+}
+
+async function updateEmailVerification(req, res){
+    try{
+        const userId = req.userId;
+        const {code} = req.query;
+
+        const oldEmail = verifyToken(code);
+
+        if(!oldEmail){
+            return responser.success(res, null, "USER_E005");
+        }
+
+        const user = await depManager.USER.getUserModel().updateOne({_id: userId, email: oldEmail});
+
+        if(!user){
+            return responser.success(res, null, "USER_E005");
+        }
+
+        user.emailVerified = true;
+        await user.save();
+
+        return responser.success(res, true, "USER_S005");
     }catch(e){
         console.log(error);
         return responser.success(res, null, "USER_E001");
@@ -145,6 +173,7 @@ module.exports = {
     update,
     deleteAccount,
     updateFollowUp,
+    updateEmailVerification,
     updateBranding,
     updatePersonalizedLink,
     checkDomainIsAvailable

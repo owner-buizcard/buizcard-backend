@@ -4,10 +4,12 @@
         "S002": "Account deleted successfully!",
         "S003": "Updated successfully!",
         "S004": "Domain is available!",
+        "S005": "Email verified successfully!",
 
         "E001": "Something went wrong. Try again later!.",
         "E002": "Profile not found.",
         "E003": "Domain is currently unavailable!",
-        "E004": "Domain is invalid."
+        "E004": "Domain is invalid.",
+        "E005": "Oops! the link is expired!"
     }
 }

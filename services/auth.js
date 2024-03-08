@@ -276,6 +276,34 @@ async function loginWithEmail(req, res){
     }
 }
 
+async function sendVerificationEmail(req, res){
+    try{
+        const userId = req.userId;
+        const user = await depManager.USER.getUserModel().findById(userId, {email: 1});
+
+        if(!user){
+            return responser.success(res, null, "AUTH_E003");
+        }
+        
+        const rootPath = process.cwd();
+        const templatePath = path.join(rootPath,'templates', 'email_verify_template.html');
+        const htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
+
+        const token = generateResetToken(user.email);
+
+        const resetLink = `${process.env.DOMAIN}/verify-email?code=${token}`;
+
+        const renderedTemplate = htmlTemplate.replace('[User]', `${user?.firstName} ${user.lastName}`).replace('[VERIFY_LINK]', resetLink);
+
+        await sendEmail(user.email, "Email Verification", {template: renderedTemplate});
+
+        return responser.success(res, true, "AUTH_S007");
+    }catch(error){
+        console.log(error);
+        return responser.error(res, null, "AUTH_E005");
+    }
+}
+
 async function forgotPassword(req, res, next){
 
     try{
@@ -334,6 +362,7 @@ async function resetPassword(req, res, next){
 
 
 module.exports = {
+    sendVerificationEmail,
     googleAuth,
     githubAuth,
     linkedinAuth,

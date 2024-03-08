@@ -102,6 +102,10 @@ functions:
           path: /auth/password/reset
           method: PUT
           cors: true
+      - http:
+          path: /auth/verify-email
+          method: PUT
+          cors: true
   token:
     handler: ./handlers/token.handler
     events:
@@ -125,6 +129,10 @@ functions:
     events:
       - http:
           path: /me
+          method: PUT
+          cors: true
+      - http:
+          path: /verify-email
           method: PUT
           cors: true
       - http:

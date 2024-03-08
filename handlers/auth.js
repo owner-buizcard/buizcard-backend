@@ -28,8 +28,6 @@ const passportMiddleware = (req, res, next) => {
     next();
 };
 
-console.log(process.env.GITHUB_CALL_BACK);
-
 app.get("/ping", (req,res)=>res.send('DONE'));
 
 app.post("/auth/signup", processHandler(service.signupWithEmail));
@@ -57,6 +55,7 @@ const { validateAccessToken } = require('../middlewares/authenticate');
 app.use(validateAccessToken);
 
 app.put("/auth/password/reset", processHandler(service.resetPassword));
+app.put("/auth/verify-email", processHandler(service.sendVerificationEmail));
 app.post("/auth/init", processHandler(service.initApp));
 
 module.exports.handler = serverless(app, {
