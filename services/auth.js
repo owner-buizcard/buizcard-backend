@@ -289,7 +289,7 @@ async function sendVerificationEmail(req, res){
         const templatePath = path.join(rootPath,'templates', 'email_verify_template.html');
         const htmlTemplate = fs.readFileSync(templatePath, 'utf-8');
 
-        const token = generateResetToken(user.email);
+        const token = generateResetToken(userId);
 
         const resetLink = `${process.env.DOMAIN}/verify-email?token=${token}`;
 
