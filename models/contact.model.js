@@ -20,7 +20,7 @@ const _contactSchema = new Schema({
     },
     type: {
         type: String,
-        default: "Bizcard"
+        default: "Buizcard"
     },
     status: {
         type: String,
