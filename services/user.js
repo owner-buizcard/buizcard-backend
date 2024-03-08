@@ -32,7 +32,7 @@ async function updateEmailVerification(req, res){
 
         return responser.success(res, true, "USER_S005");
     }catch(e){
-        console.log(error);
+        console.log(e);
         return responser.success(res, null, "USER_E001");
     }
 }
