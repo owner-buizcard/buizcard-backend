@@ -291,7 +291,7 @@ async function sendVerificationEmail(req, res){
 
         const token = generateResetToken(user.email);
 
-        const resetLink = `${process.env.DOMAIN}/verify-email?code=${token}`;
+        const resetLink = `${process.env.DOMAIN}/verify-email?token=${token}`;
 
         const renderedTemplate = htmlTemplate.replace('[User]', `${user?.firstName} ${user.lastName}`).replace('[VERIFY_LINK]', resetLink);
 

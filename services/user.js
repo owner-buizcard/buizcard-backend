@@ -28,22 +28,7 @@ async function updateFollowUp(req, res){
 async function updateEmailVerification(req, res){
     try{
         const userId = req.userId;
-        const {code} = req.query;
-
-        const oldEmail = verifyToken(code);
-
-        if(!oldEmail){
-            return responser.success(res, null, "USER_E005");
-        }
-
-        const user = await depManager.USER.getUserModel().updateOne({_id: userId, email: oldEmail});
-
-        if(!user){
-            return responser.success(res, null, "USER_E005");
-        }
-
-        user.emailVerified = true;
-        await user.save();
+        await depManager.USER.getUserModel().updateOne({_id: userId}, {emailVerified: true});
 
         return responser.success(res, true, "USER_S005");
     }catch(e){
