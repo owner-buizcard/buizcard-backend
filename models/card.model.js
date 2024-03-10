@@ -114,6 +114,19 @@ const _cardSchema = new Schema({
         enum: ["ACTIVE", "INACTIVE", "PAUSED","DELETED"],
         default: "ACTIVE"
     },
+    captureForm: {
+        type: Object,
+        default: {
+            enable: true,
+            fields: [
+                { label: "Full Name", isRequired: false },
+                { label: "Email", isRequired: false },
+                { label: "Phone", isRequired: false },
+                { label: "Message", isRequired: false }
+            ],
+            disclaimer: "Your data is protected by Buizcard"
+        }
+    },
     fields: {
         type: [{
             id: {
