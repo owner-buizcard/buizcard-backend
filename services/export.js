@@ -60,19 +60,39 @@ async function makeSpreadsheetRequest(contactIds, accessToken, meta, userId) {
     const contacts = await fetchContacts(contactIds);
 
     let values = contacts.map(item => {
+
         const card = item.card;
-        return [
-            card.name ? `${card.name.firstName} ${card.name.lastName}` : '', 
-            card.email || '',
-            card.phoneNumber || '',
-            card.address ? `${card.address?.addressLine1}` : '',
-            card.address ? `${card.address?.city}` : '',
-            card.address ? `${card.address?.state}` : '',
-            card.address ? `${card.address?.country}` : '',
-            card.address ? `${card.address?.pincode}` : '',
-            card.company ? `${card.company?.companyName}` : '',
-            card.company ? `${card.company?.title}` : '',
-        ];
+        const details = item.details;
+        if(card){
+            return [
+                card.name ? `${card.name.firstName} ${card.name.lastName}` : '', 
+                card.email || '',
+                card.phoneNumber || '',
+                card.address ? `${card.address?.addressLine1}` : '',
+                card.address ? `${card.address?.city}` : '',
+                card.address ? `${card.address?.state}` : '',
+                card.address ? `${card.address?.country}` : '',
+                card.address ? `${card.address?.pincode}` : '',
+                card.company ? `${card.company?.companyName}` : '',
+                card.company ? `${card.company?.companyWebsite}` : '',
+                card.company ? `${card.company?.title}` : '',
+            ];
+        }else{
+            return [
+                details.name || '', 
+                details.email || '',
+                details.phone || '',
+                details.location,
+                '',
+                '',
+                '',
+                '',
+                details?.company || '',
+                details?.website || '',
+                details?.title || ''
+            ];
+        }
+
       });
 
     const currentDate = new Date();
@@ -81,7 +101,7 @@ async function makeSpreadsheetRequest(contactIds, accessToken, meta, userId) {
     values = [ 
         [""], 
         ["Date", formatted],
-        ["Name", "Email", "Phone", "Address", "City", "State", "Country", "Pincode", "Company Name", "Title"],
+        ["Name", "Email", "Phone", "Address", "City", "State", "Country", "Pincode", "Company Name", "Website", "Title"],
         ...values
     ]
 
@@ -287,7 +307,7 @@ function formatContact(contact){
     }else{
         return {
             "First_Name": contact.details.name || '',
-            "Last_Name": contact.details.name || '',
+            "Last_Name": '',
             "Email": contact.details.email || '',
             "Phone": contact.details.phone || '',
             "Address": contact.details.location || '',
