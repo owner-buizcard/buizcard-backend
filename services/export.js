@@ -2,78 +2,7 @@ const { default: axios } = require("axios");
 const depManager = require("../core/depManager");
 const responser = require("../core/responser");
 const hubspot = require('@hubspot/api-client')
-// const Excel = require('exceljs');
-const fs = require('fs');
-const fsPromise = require('fs').promises;
 const { default: mongoose } = require("mongoose");
-const { uploadObjectToS3Bucket } = require("../core/utils");
-
-// Csv
-async function csvExport(req, res) {
-    try {
-        const { userId } = req;
-        const { contacts } = req.body;
-
-        const fields = Object.keys(contacts[0]);
-
-        let csv = fields.join(',') + '\n';
-
-        contacts.forEach(contact => {
-            const row = fields.map(field => contact[field] || '').join(',');
-            csv += row + '\n';
-        });
-
-        const filePath = `Bizcard.csv`;
-        await fsPromise.writeFile(filePath, csv, 'utf8');
-
-        const mimetype = 'text/csv';
-        const fileData = await fsPromise.readFile(filePath);
-
-        const fileUrl = await uploadObjectToS3Bucket(`${userId}/bizcard-contacts.csv`, mimetype, fileData);
-        await fsPromise.unlink(filePath);
-        const file_url = fileUrl.substring(0, fileUrl.indexOf('?'));
-
-        responser.success(res, file_url, "EXPORT_S004");
-    } catch (error) {
-        handleError(error, res);
-    }
-}
-
-// Excel
-async function excelExport(req, res) {
-    try {
-        const { userId } = req;
-        const { contacts } = req.body;
-
-        let values = contacts.map(contact => {return Object.values(contact);})
-
-        values = [ 
-            [], 
-            ["Name", "Email", "Phone"],
-            [], 
-            ...values
-        ]
-
-        // const workbook = new Excel.Workbook();
-        // const worksheet = workbook.addWorksheet('Contacts');
-
-        // values.forEach((row) => { worksheet.addRow(row); });
-
-        // const filePath = `Bizcard.xlsx`;
-        // await workbook.xlsx.writeFile(filePath);
-
-        // const mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        // const fileData = fs.readFileSync(filePath);
-
-        // const fileUrl = await uploadObjectToS3Bucket(`${userId}/bizcard-contacts.xls`, mimetype, fileData);
-        // fs.unlinkSync(filePath);
-        // const file_url = fileUrl.substring(0, fileUrl.indexOf('?'));
-
-        // responser.success(res, file_url, "EXPORT_S004");
-    } catch (error) {
-        handleError(error, res);
-    }
-}
 
 // Spreadsheet
 async function spreadSheetExport(req, res) {
@@ -108,7 +37,6 @@ async function createContactsInSpreadsheet(ss, contactIds, userId) {
     try {
         await makeSpreadsheetRequest(contactIds, ss.accessToken, ss.meta, userId);
     } catch (error) {
-        console.log(error);
         if (error.response && error.response.status === 401) {
             const accessToken = await getSpreadsheetAccessToken(ss.refreshToken);
             await Promise.all([
@@ -131,17 +59,34 @@ async function makeSpreadsheetRequest(contactIds, accessToken, meta, userId) {
 
     const contacts = await fetchContacts(contactIds);
 
-    let values = contacts.map(contact => {return Object.values(contact);})
+    let values = contacts.map(item => {
+        const card = item.card;
+        return [
+            card.name ? `${card.name.firstName} ${card.name.lastName}` : '', 
+            card.email || '',
+            card.phoneNumber || '',
+            card.address ? `${card.address?.addressLine1}` : '',
+            card.address ? `${card.address?.city}` : '',
+            card.address ? `${card.address?.state}` : '',
+            card.address ? `${card.address?.country}` : '',
+            card.address ? `${card.address?.pincode}` : '',
+            card.company ? `${card.company?.companyName}` : '',
+            card.company ? `${card.company?.title}` : '',
+        ];
+      });
+
+    const currentDate = new Date();
+    const formatted = currentDate.toLocaleDateString('en-US', {day: '2-digit', month: 'short', year: 'numeric'})
 
     values = [ 
-        [], 
-        ["Name", "Email", "Phone"],
-        [], 
+        [""], 
+        ["Date", formatted],
+        ["Name", "Email", "Phone", "Address", "City", "State", "Country", "Pincode", "Company Name", "Title"],
         ...values
     ]
 
-    const range = `Sheet1!A1:C`;
-    const endPoint = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=RAW&key=${process.env.GOOGLE_API_KEY}`;
+    const range = `Sheet1!A1:Z`;
+    const endPoint = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}:append?valueInputOption=RAW&insertDataOption=OVERWRITE&key=${process.env.GOOGLE_API_KEY}`;
     const data = {values: values};
     const header = {
         headers: {
@@ -402,7 +347,5 @@ function handleError(error, res) {
 module.exports = {
     zohoExport,
     hubspotExport,
-    spreadSheetExport,
-    csvExport,
-    excelExport
+    spreadSheetExport
 };

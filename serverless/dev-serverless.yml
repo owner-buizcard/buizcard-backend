@@ -322,14 +322,6 @@ functions:
           path: /spreadsheet/export
           method: POST
           cors: true
-      - http:
-          path: /excel/export
-          method: POST
-          cors: true
-      - http:
-          path: /csv/export
-          method: POST
-          cors: true
   alerts:
     handler: ./handlers/alerts.handler
     events:
