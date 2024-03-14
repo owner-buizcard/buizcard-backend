@@ -48,7 +48,7 @@ async function getVirtualBgs(req, res) {
 
         const extractedData = groupedData.map(categoryData => ({
             category: categoryData.category,
-            items: categoryData.items.map(item => ({ _id: item._id, normal: item.normal }))
+            items: categoryData.items.map(item => ({ _id: item._id, normal: item.normal, large: item.large }))
         }));
 
         return responser.success(res, extractedData, "VBG_S001");
