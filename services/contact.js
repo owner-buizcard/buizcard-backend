@@ -139,8 +139,26 @@ async function get(req, res){
 }
 
 async function getUserContacts(req, res){
+
     try{
         const userId = req.userId;
+        const currentDate = new Date();
+        let maxLeads = 3;
+        const data = await depManager.SUBSCRIPTION.getSubscriptionModel().findOne({
+            userId,
+            $expr: {
+                $and: [
+                    { $lte: [{ $toDate: "$startAt" }, currentDate] },
+                    { $gte: [{ $toDate: "$endAt" }, currentDate] }
+                ]
+            }
+        });
+
+        if(data){
+            const plan = await depManager.SUBSCRIPTION.getPlanModel().findById(data.plan.id);
+            maxLeads = plan.name=='Basic' ? 25: plan.name=='Pro' ? 100: 1000;
+        }
+
         const condition = [
             {
                 $match: { userId: new mongoose.Types.ObjectId(userId) }
@@ -165,12 +183,34 @@ async function getUserContacts(req, res){
                         $ifNull: ['$card', null] 
                     }
                 }
+            },
+            {
+                $sort: { 
+                    'connectedAt': 1
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: 1 }
+                }
             }
         ];
 
-        const contacts = await depManager.CONTACT.getContactModel().aggregate(condition);
+        const totalCountPipeline = [...condition];
+        const contactsPipeLine = [...condition];
+        contactsPipeLine.pop();
+        contactsPipeLine.push({ $limit: maxLeads });
+
+        const [totalCountResult, contacts] = await Promise.all([
+            depManager.CONTACT.getContactModel().aggregate(totalCountPipeline),
+            depManager.CONTACT.getContactModel().aggregate(contactsPipeLine)
+        ]);
+
+        const totalCount = totalCountResult && totalCountResult[0] ? totalCountResult[0].total : 0;
+        const featureCount = totalCount - contacts.length ;
         
-        return responser.success(res, contacts, "CONTACT_S003");
+        return responser.success(res, {contacts, totalCount, featureCount}, "CONTACT_S003");
     }catch(error){
         console.log(error);
         return responser.success(res, null, "GLOBAL_E001");
