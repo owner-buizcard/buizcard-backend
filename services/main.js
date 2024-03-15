@@ -67,6 +67,23 @@ async function fetchMainData(req, res) {
             }
         ];   
 
+        const currentDate = new Date();
+        let maxLeads = 3;
+        const data = await depManager.SUBSCRIPTION.getSubscriptionModel().findOne({
+            userId,
+            $expr: {
+                $and: [
+                    { $lte: [{ $toDate: "$startAt" }, currentDate] },
+                    { $gte: [{ $toDate: "$endAt" }, currentDate] }
+                ]
+            }
+        });
+        
+        if(data){
+            const plan = await depManager.SUBSCRIPTION.getPlanModel().findById(data.plan.id);
+            maxLeads = plan.name=='Basic' ? 25: plan.name=='Pro' ? 100: 1000;
+        }
+
         const condition = [
             {
                 $match: { userId: new mongoose.Types.ObjectId(userId) }
@@ -91,21 +108,36 @@ async function fetchMainData(req, res) {
                         $ifNull: ['$card', null] 
                     }
                 }
+            },
+            {
+                $sort: { 
+                    'connectedAt': 1
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: 1 }
+                }
             }
         ];
+
+        const totalCountPipeline = [...condition];
+        const contactsPipeLine = [...condition];
+        contactsPipeLine.pop();
+        contactsPipeLine.push({ $limit: maxLeads });
         
 
-        const [user, cards, contacts, fieldTypes, configs, plans, subscriptions] = await Promise.all([
+        const [user, cards, fieldTypes, configs, plans, subscriptions, totalCountResult, contacts] = await Promise.all([
             depManager.USER.getUserModel().findById(userId),
             depManager.CARD.getCardModel().aggregate(conditionForCards),
-            depManager.CONTACT.getContactModel().aggregate(condition),
             depManager.CONFIG.getFieldTypesModel().find(),
             depManager.CONFIG.getConfigModel().find(),
             depManager.SUBSCRIPTION.getPlanModel().find(),
             depManager.SUBSCRIPTION.getSubscriptionModel().find({userId}),
+            depManager.CONTACT.getContactModel().aggregate(totalCountPipeline),
+            depManager.CONTACT.getContactModel().aggregate(contactsPipeLine)
         ]);
-
-        const currentDate = new Date();
 
         const subscriptionMap = {
             current: [],
@@ -140,8 +172,11 @@ async function fetchMainData(req, res) {
         
         const token = generateTokens(userId)
         const config = {fieldTypes, configs, plans};
+
+        const totalCount = totalCountResult && totalCountResult[0] ? totalCountResult[0].total : 0;
+        const featureCount = totalCount - contacts.length ;
         
-        return responser.success(res, {user, contacts, cards, config,  token, subscriptionMap}, "MAIN_S001")
+        return responser.success(res, {user, contacts, featureCount, cards, config,  token, subscriptionMap}, "MAIN_S001")
     }catch(error){
         console.log(error);
         return responser.success(res, null, "MAIN_E001")
